@@ -7,6 +7,7 @@ Command-line usage
 ------------------
 
 `bin/jarvis` - interactive jarvis
+
 `bin/jarvis weather` - single command jarvis
 
 Configuration

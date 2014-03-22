@@ -6,18 +6,19 @@ Jarvis is a multi-modal chat bot written in PHP.  This started out as a simple t
 Command-line usage
 ------------------
 
-`bin/jarvis`
+`bin/jarvis` - interactive jarvis
+`bin/jarvis weather` - single command jarvis
 
 Configuration
 -------------
 
 Copy config.sample.php to config.php and edit as necessary.  The majority of configuration options are for storing API keys and other responder-specific settings.  This is also where you would set your Slack token for SlackBot or Mandrill email settings for MandrillBot.
 
-`enabled_responders` can be set to 'all' or an array of responders.
+*enabled_responders* can be set to 'all' or an array of responders.  Defaults to all
 
 For the web console (test.php) or web-hooks (used by Slack and Mandrill), you will want to point your web root to the web directory.
 
-Add bin/jarvis to your path for access to Jarvis from anywhere on the command line.
+Add `bin/jarvis` to your path for access to Jarvis from anywhere on the command line.
 
 Finally, if you want to make use of the file cache, make the cache directory writable by both your command line user and web server.
 

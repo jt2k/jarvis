@@ -53,12 +53,10 @@ class Bot
         if ($this->responders_loaded) {
             return;
         }
-        if (isset($this->config['enabled_responders'])) {
-            if ($this->config['enabled_responders'] === 'all') {
-                $this->loadAllResponders();
-            } elseif (is_array($this->config['enabled_responders'])) {
-                $this->loadEnabledResponders();
-            }
+        if (isset($this->config['enabled_responders']) && is_array($this->config['enabled_responders'])) {
+            $this->loadEnabledResponders();
+        } else {
+            $this->loadAllResponders();
         }
         $this->responders_loaded = true;
     }

@@ -1,0 +1,73 @@
+#!/usr/bin/env php
+<?php
+if (php_sapi_name() != 'cli') {
+    die;
+}
+
+use jt2k\Jarvis\Bot;
+
+// get username
+$user = trim(@`whoami`)?:'user';
+
+// load jarvis
+require __DIR__ . '/../bootstrap.php';
+$bot = new Bot($jarvis_config);
+
+// if a string is passed in as argument, just respond to the query and exit
+if (isset($argv[1])) {
+    $args = $argv;
+    unset($args[0]);
+    $text = join(' ', $args);
+    $response = $bot->respond(array('user_name' => $user, 'text' => $text));
+    if ($response) {
+        echo "{$response}\n";
+    }
+    exit;
+}
+
+// enable readline if available and set persistent history file
+if (function_exists('readline')) {
+    $readline = true;
+    if (isset($_SERVER['HOME'])) {
+        $readline_history_file = "{$_SERVER['HOME']}/.jarvis_history";
+        readline_read_history($readline_history_file);
+    } else {
+        $readline_history_file = false;
+    }
+} else {
+    $readline = false;
+}
+
+// set up prompt
+if (isset($jarvis_config['name']) && $jarvis_config['name']) {
+    $prompt = "{$jarvis_config['name']}> ";
+} else {
+    $prompt = "jarvis> ";
+}
+
+while (1) {
+    // read input
+    if ($readline) {
+        $input = readline($prompt);
+        readline_add_history($input);
+        $input = trim($input);
+    } else {
+        echo $prompt;
+        $input = trim(fgets(fopen('php://stdin', 'r')));
+    }
+
+    // exit/quit when requested
+    if (preg_match('/^(exit|quit);?$/', $input)) {
+        echo "Goodbye!\n";
+        if ($readline && $readline_history_file) {
+            readline_write_history($readline_history_file);
+        }
+        exit;
+    }
+
+    // respond
+    $response = $bot->respond(array('user_name' => $user, 'text' => $input));
+    if ($response) {
+        echo "{$response}\n";
+    }
+}

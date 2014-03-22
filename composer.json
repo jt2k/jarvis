@@ -1,0 +1,6 @@
+{
+    "require": {
+        "swiftmailer/swiftmailer": "@stable",
+        "simplepie/simplepie": "1.3.*"
+    }
+}

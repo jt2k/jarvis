@@ -1,0 +1,16 @@
+html { height: 100%}
+body {font-family: helvetica, arial, sans-serif; font-size: 10pt; margin: 0; padding: 0; height: 100%}
+#name {display:none; width: 80px;}
+#speak {display: none}
+#listen {display: none}
+#controls {float: right; padding-right: 10px;}
+#controls img {height: 30px; width: 30px; padding: 10px 5px; }
+#log_container { height: 60%; overflow: auto; border: 2px solid #ccc; margin: 15px; padding: 5px;}
+#form {margin: 15px;}
+#text { font-size: 12pt; width: 200px;}
+#log td, #log th {font-family: "courier new", courier, monospace; font-size: 10pt; vertical-align: top}
+#log td { white-space: pre-wrap; }
+#log th {color: blue}
+#log th.jarvis {color: red;}
+#log th {text-align: right}
+h1 {font-size: 16pt; margin: 0; padding: 15px 15px 0 15px;}

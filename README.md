@@ -37,11 +37,11 @@ Web usage
 What's next
 -----------
 
-- [ ] Separate "default" (globally useful) responders from personal-use responders
-- [ ] Twitter interface
-- [x] Twilio interface
-- [ ] IRC interface
-- [ ] More modularized interface architecture
-- [ ] Persistent storage for responders
-- [ ] Stateful responders
-- [ ] Per-user settings (e.g. allow users to override default lat/lon coordinates)
+* Separate "default" (globally useful) responders from personal-use responders
+* Twitter interface
+* Twilio interface :ballot_box_with_check:
+* IRC interface
+* More modularized interface architecture
+* Persistent storage for responders
+* Stateful responders
+* Per-user settings (e.g. allow users to override default lat/lon coordinates)

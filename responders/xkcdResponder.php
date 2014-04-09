@@ -31,7 +31,8 @@ class xkcdResponder extends Responder
             $str = $xkcd->img;
             $str .= "\n\"{$xkcd->title}\" - {$xkcd->month}/{$xkcd->day}/{$xkcd->year}";
             if (isset($xkcd->alt)) {
-                $str .= "\n[{$xkcd->alt}]";
+                $alt = utf8_decode($xkcd->alt);
+                $str .= "\n[{$alt}]";
             }
 
             return $str;

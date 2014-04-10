@@ -7,7 +7,18 @@ namespace jt2k\Jarvis;
  */
 class WeatherResponder extends Responder
 {
-    public static $pattern = '(?:weather|temperature)( hourly( \d+)?| forecast( \d+)?)?';
+    public static $pattern = '(weather|temperature|rain)( hourly( \d+)?| forecast( \d+)?)?';
+    public static $help = array(
+        'weather - returns current temperature and conditions',
+        'temperature - returns current temperature and conditions',
+        'rain - returns the probabilty of rain for the next 24 hours',
+        'weather foreacst - returns weather foreacst for the next hour, today, and tomorrow',
+        'weather foreacst [n] - returns weather foreacst for the next n days',
+        'weather hourly - returns hourly temperature forecast',
+        'weather hourly [n] - returns hourly temperature forecast for the next n hours',
+    );
+    public static $help_words = array('temperature', 'rain');
+
     protected $data;
 
     protected function formatTime($format, $ts)
@@ -28,8 +39,8 @@ class WeatherResponder extends Responder
         $temp = round($this->data->currently->temperature);
         $string = "Currently: {$temp}°F, {$this->data->currently->summary}\n";
         $string .= "Next hour: {$this->data->minutely->summary}\n";
-        if (isset($this->matches[3])) {
-            $days = (int) trim($this->matches[3]);
+        if (isset($this->matches[4])) {
+            $days = (int) trim($this->matches[4]);
             $days = min(7, $days);
             $days = max(0, $days);
         } else {
@@ -59,8 +70,8 @@ class WeatherResponder extends Responder
     {
         $temp = round($this->data->currently->temperature);
         $string = "Currently: {$temp}°F, {$this->data->currently->summary}\n";
-        if (isset($this->matches[2])) {
-            $hours = (int) trim($this->matches[2]);
+        if (isset($this->matches[3])) {
+            $hours = (int) trim($this->matches[3]);
             $hours = min(24, $hours);
             $hours = max(1, $hours);
         } else {
@@ -79,6 +90,32 @@ class WeatherResponder extends Responder
         $string = trim($string, ', ');
 
         return $string;
+    }
+
+    protected function generateRain()
+    {
+        $str = 'Currently: ' . round(100 * $this->data->currently->precipProbability) . "% chance of rain\n";
+        $count = 0;
+        for ($i = 1; $i <= 24; $i++) {
+            if (!isset($this->data->hourly->data[$i])) {
+                break;
+            }
+            $hour = $this->data->hourly->data[$i];
+            if ($hour->precipProbability > 0) {
+                $str .= $this->formatTime('ga', $hour->time);
+                $precip = round(100 * $hour->precipProbability);
+                $str .= ": {$precip}%, ";
+                $count++;
+                if ($count > 5) {
+                    break;
+                }
+            }
+        }
+        if ($count == 0) {
+            $str .= "No chance of rain in the next 24 hours";
+        }
+        $str = trim($str, ', ');
+        return $str;
     }
 
     protected function generateCurrent()
@@ -104,9 +141,12 @@ class WeatherResponder extends Responder
             return 'Sorry, I could not retrieve the weather from forecast.io.';
         }
 
-        if (isset($this->matches[1]) && preg_match('/hourly/', $this->matches[1])) {
+        if ($this->matches[1] == 'rain') {
+            return $this->generateRain();
+        }
+        elseif (isset($this->matches[2]) && preg_match('/hourly/', $this->matches[2])) {
             return $this->generateHourly();
-        } elseif (isset($this->matches[1]) && $this->matches[1]) {
+        } elseif (isset($this->matches[2]) && $this->matches[2]) {
             return $this->generateForecast();
         } else {
             return $this->generateCurrent();

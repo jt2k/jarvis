@@ -121,15 +121,17 @@ class Bot
             }
         }
 
-        // execute matching responders
-        foreach ($this->map as $regex => $class_name) {
-            if (preg_match("/{$regex}/i", $command, $matches)) {
-                $responder = new $class_name($this->config, $communication, $matches);
-                $response = $responder->respond();
-                if ($this->max_response_length && strlen($response) > $this->max_response_length) {
-                    $response = substr($response, 0, $this->max_response_length). '...';
+        if (count($responses) == 0) {
+            // execute matching responders, unless help was triggered
+            foreach ($this->map as $regex => $class_name) {
+                if (preg_match("/{$regex}/i", $command, $matches)) {
+                    $responder = new $class_name($this->config, $communication, $matches);
+                    $response = $responder->respond();
+                    if ($this->max_response_length && strlen($response) > $this->max_response_length) {
+                        $response = substr($response, 0, $this->max_response_length). '...';
+                    }
+                    $responses[] = $response;
                 }
-                $responses[] = $response;
             }
         }
 

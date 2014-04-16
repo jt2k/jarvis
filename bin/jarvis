@@ -7,7 +7,13 @@ if (php_sapi_name() != 'cli') {
 use jt2k\Jarvis\Bot;
 
 // get username
-$user = trim(@`whoami`)?:'user';
+if (isset($_SERVER['USER'])) {
+    $user = $_SERVER['USER'];
+} elseif ($whoami = trim(@`whoami`)) {
+    $user = $whoami;
+} else {
+    $user = 'user';
+}
 
 // load jarvis
 require __DIR__ . '/../bootstrap.php';

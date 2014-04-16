@@ -134,7 +134,7 @@ class WeatherResponder extends Responder
         $apikey = $this->config['forecast.io_key'];
         $location = $this->config['forecast.io_coords'];
 
-        $url = "http://api.forecast.io/forecast/{$apikey}/{$location}";
+        $url = "https://api.forecast.io/forecast/{$apikey}/{$location}";
         $this->data = $this->request($url, 600, 'weather'); // cache for 10 minutes
 
         if (!is_object($this->data) || !is_object($this->data->currently)) {

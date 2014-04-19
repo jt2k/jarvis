@@ -16,6 +16,7 @@ if (file_exists(__DIR__ . '/vendor/autoload.php')) {
 
 $jarvis_config = array();
 $jarvis_config['responders_directory'] = __DIR__ . '/responders';
+$jarvis_config['name'] = 'jarvis';
 
 if (file_exists(__DIR__ . '/config.php')) {
     require 'config.php';

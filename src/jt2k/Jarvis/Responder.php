@@ -66,8 +66,7 @@ abstract class Responder
         } else {
             $restapi->setCacheLife(0);
         }
-
-        return $restapi->request($url);
+        return $restapi->request($url, array('headers' => array('User-Agent: jarvis')));
     }
 
     protected function requestRaw($url, $cache_ttl = false, $cache_ext = '')

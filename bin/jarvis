@@ -17,7 +17,7 @@ if (isset($_SERVER['USER'])) {
 
 // load jarvis
 require __DIR__ . '/../bootstrap.php';
-$bot = new Bot($jarvis_config);
+$bot = new Bot($jarvis_config, 'console');
 
 // if a string is passed in as argument, just respond to the query and exit
 if (isset($argv[1])) {

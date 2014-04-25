@@ -6,20 +6,44 @@ $jarvis_config['enabled_responders'] = 'all';
 // or, array of responders:
 // $jarvis_config['enabled_responders'] = array('Hello', 'Weather');
 
-// Optional
+$jarvis_config['enabled_adapters'] = 'all';
+// or, array of adapters:
+// $jarvis_config['enabled_adapters'] = array('console', 'web', 'slack', 'irc', 'email', 'sms');
+
+
+/*
+ * Optional configuration options
+ */
 $jarvis_config['name'] = 'jarvis';
 $jarvis_config['cache_directory'] = __DIR__ . '/cache';
 $jarvis_config['enable_help'] = true;
+$jarvis_config['location'] = array(LATITUDE, LONGITUDE);
 
-// Configuration for Bot types
-$jarvis_config['slackbot_token'] = 'SLACKBOT_TOKEN';
-$jarvis_config['email_address'] = 'EMAIL_ADDRESS';
-$jarvis_config['mandrill_username'] = 'MANDRILL_USERNAME';
-$jarvis_config['mandrill_password'] = 'MANDRILL_PASSWORD';
+/*
+ * Configuration for adapters
+ */
+if ($jarvis_config['enabled_adapters'] == 'all' || in_array('slack', $jarvis_config['enabled_adapters'])) {
+	$jarvis_config['slackbot_token'] = 'SLACKBOT_TOKEN';
+}
 
-// Configuration for responders
+if ($jarvis_config['enabled_adapters'] == 'all' || in_array('email', $jarvis_config['enabled_adapters'])) {
+	$jarvis_config['email_address'] = 'EMAIL_ADDRESS';
+	$jarvis_config['mandrill_username'] = 'MANDRILL_USERNAME';
+	$jarvis_config['mandrill_password'] = 'MANDRILL_PASSWORD';
+}
+
+if ($jarvis_config['enabled_adapters'] == 'all' || in_array('irc', $jarvis_config['enabled_adapters'])) {
+	$jarvis_config['irc_hostname'] = 'IRC_HOSTNAME';
+	$jarvis_config['irc_port'] = 6667;
+	$jarvis_config['irc_channels'] = array('#example');
+	// $jarvis_config['irc_password'] = 'PASSWORD'; // server password
+}
+
+
+/*
+ * Configuration for responders
+ */
 $jarvis_config['forecast.io_key'] = 'FORECAST.IO_KEY';
-$jarvis_config['forecast.io_coords'] = 'FORECAST.IO_COORDS'; // ex. '36.1678,-86.7782'
 
 $jarvis_config['twitter_consumer_key'] = 'TWITTER_CONSUMER_KEY';
 $jarvis_config['twitter_consumer_secret'] = 'TWITTER_CONSUMER_SECRET';
@@ -29,3 +53,6 @@ $jarvis_config['twitter_oauth_token_secret'] = 'TWITTER_OAUTH_TOKEN_SECRET';
 $jarvis_config['wolframalpha_appid'] = 'WOLFRAMALPHA_APPID';
 
 $jarvis_config['merriam_webster_key'] = 'MERRIAM_WEBSTER_KEY';
+
+$jarvis_config['github_access_token'] = 'GITHUB_ACCESS_TOKEN';
+$jarvis_config['github_username'] = 'GITHUB_USERNAME';

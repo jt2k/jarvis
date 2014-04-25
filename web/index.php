@@ -1,5 +1,9 @@
 <?php
 require '../bootstrap.php';
+if ($jarvis_config['enabled_adapters'] != 'all' && !in_array('web', $jarvis_config['enabled_adapters'])) {
+    exit("Web adapter is disabled");
+}
+
 if (isset($jarvis_config['name']) && $jarvis_config['name']) {
     $jarvis = htmlspecialchars($jarvis_config['name']);
 } else {

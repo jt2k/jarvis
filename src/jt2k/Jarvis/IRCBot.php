@@ -26,7 +26,7 @@ class IRCBot extends Bot
             }
         }
         $this->nickname = $config['name'];
-        return parent::__construct($config);
+        return parent::__construct($config, 'irc');
     }
 
     public function setDebug($debug)

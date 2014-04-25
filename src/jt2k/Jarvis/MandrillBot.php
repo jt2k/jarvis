@@ -12,7 +12,7 @@ class MandrillBot extends Bot
             throw new \Exception('mandrill username and password must be configured');
         }
 
-        return parent::__construct($config);
+        return parent::__construct($config, 'email');
     }
 
     protected function parsePost()

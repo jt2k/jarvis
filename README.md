@@ -30,18 +30,18 @@ Web usage
 ---------
 
 * **index.php** - web-based chat console; supports speech recognition and synthesis in Chrome
-* **slack.php** - web-hook for Slack interface; **slackbot_token** must be defined in config.php
-* **mandrill.php** - web-hook for Mandrill email interface; **mandrill_username**, **mandrill_password**, and **email_address** must be defined in config.php
-* **twilio.php** - web-hook for Twilio SMS interface
+* **slack.php** - web-hook for Slack adapter; **slackbot_token** must be defined in config.php
+* **mandrill.php** - web-hook for Mandrill email adapter; **mandrill_username**, **mandrill_password**, and **email_address** must be defined in config.php
+* **twilio.php** - web-hook for Twilio SMS adapter
 
 What's next
 -----------
 
 * Separate "default" (globally useful) responders from personal-use responders
-* Twitter interface
-* Twilio interface :ballot_box_with_check:
-* IRC interface
-* More modularized interface architecture
+* Twitter adapter
+* Twilio adapter :ballot_box_with_check:
+* IRC adapter :ballot_box_with_check:
+* More modularized adapter architecture
 * Persistent storage for responders
 * Stateful responders
 * Per-user settings (e.g. allow users to override default lat/lon coordinates)

@@ -127,12 +127,12 @@ class WeatherResponder extends Responder
 
     public function respond()
     {
-        if (!$this->requireConfig(array('forecast.io_key', 'forecast.io_coords'))) {
-            return 'forecast.io_key and forecast.io_coords are required.';
+        if (!$this->requireConfig(array('forecast.io_key', 'location'))) {
+            return 'forecast.io_key and location are required.';
         }
 
         $apikey = $this->config['forecast.io_key'];
-        $location = $this->config['forecast.io_coords'];
+        $location = join(',', $this->config['location']);
 
         $url = "https://api.forecast.io/forecast/{$apikey}/{$location}";
         $this->data = $this->request($url, 600, 'weather'); // cache for 10 minutes

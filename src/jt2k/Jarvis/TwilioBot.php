@@ -6,7 +6,7 @@ class TwilioBot extends Bot
     public function __construct(array $config)
     {
         $config['max_response_length'] = 800; // limit to 5 messages of 160 characters
-        return parent::__construct($config);
+        return parent::__construct($config, 'sms');
     }
 
     public function respond(array $post)

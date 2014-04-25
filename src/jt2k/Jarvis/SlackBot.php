@@ -9,7 +9,7 @@ class SlackBot extends Bot
             throw new \Exception('slackbot_token must be configured');
         }
 
-        return parent::__construct($config);
+        return parent::__construct($config, 'slack');
     }
 
     protected function parsePost()

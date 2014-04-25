@@ -3,18 +3,31 @@ namespace jt2k\Jarvis;
 
 class Bot
 {
+    protected $name = 'jarvis';
     protected $config = array();
     protected $map = array();
     protected $responders_loaded = false;
     protected $max_response_length = 1024;
 
-    public function __construct(array $config)
+    public function __construct(array $config, $adapter = null)
     {
         $this->config = $config;
+        if ($adapter && !$this->enabledAdapter($adapter)) {
+            throw new \Exception("{$adapter} adpater is disabled");
+        }
         if (isset($this->config['max_response_length'])) {
             $this->max_response_length = $this->config['max_response_length'];
         }
+        if (isset($this->config['name'])) {
+            $this->name = $this->config['name'];
+        }
         $this->loadResponders();
+    }
+
+    protected function enabledAdapter($adapter)
+    {
+        return ($this->config['enabled_adapters'] == 'all' ||
+                in_array($adapter, $this->config['enabled_adapters']));
     }
 
     protected function loadAllResponders()

@@ -22,35 +22,35 @@ class DaylightResponder extends Responder
         if (!$this->requireConfig(array('location'))) {
             return 'location is required';
         }
+
         list($lat, $lon) = $this->config['location'];
-        if (isset($this->config['timzone'])) {
-            $timezone = $this->config['timezone'];
-        } else {
-            $timezone = date_default_timezone_get();
-        }
-        try {
-            $tz = new \DateTimeZone($timezone);
-            $offset = $tz->getOffset(new \DateTime());
-            $offset = $offset / 3600;
-        } catch (Exception $e) {
-            return "Could not determine timezone";
-        }
+
+        $now = time();
+        $tomorrow = strtotime('+1 day', $now);
+        $yesterday = strtotime('-1 day', $now);
+
+        $sun_info = date_sun_info($now, $lat, $lon);
+        $sun_info_tomorrow = date_sun_info($tomorrow, $lat, $lon);
+        $sun_info_yesterday = date_sun_info($yesterday, $lat, $lon);
 
         if ($this->matches[1] == 'sunrise') {
             $mode = 'sunrise';
-            if (time() > strtotime('16:00')) {
-                $day = strtotime('+1 day');
+            if ($now > $sun_info['sunset']) {
+                $ts = $sun_info_tomorrow['sunrise'];
             } else {
-                $day = time();
+                $ts = $sun_info['sunrise'];
             }
-            $ts = date_sunrise($day, SUNFUNCS_RET_TIMESTAMP, $lat, $lon, ini_get("date.sunrise_zenith"), $offset);
         } else {
             $mode = 'sunset';
-            $ts = date_sunset(time(), SUNFUNCS_RET_TIMESTAMP, $lat, $lon, ini_get("date.sunset_zenith"), $offset);
+            if ($now < $sun_info['sunrise']) {
+                $ts = $sun_info_yesterday['sunset'];
+            } else {
+                $ts = $sun_info['sunset'];
+            }
         }
         
         $time = date('g:ia', $ts);
-        $seconds = $ts - time();
+        $seconds = $ts - $now;
         $minutes = $hours = 0;
         $past = false;
 

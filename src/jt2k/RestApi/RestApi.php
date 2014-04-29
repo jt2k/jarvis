@@ -195,6 +195,7 @@ class RestApi
             case 'xml':
             case 'atom':
             case 'rss':
+                libxml_use_internal_errors(true);
                 return simplexml_load_string($response);
                 break;
             case 'php':

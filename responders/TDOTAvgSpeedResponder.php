@@ -7,7 +7,6 @@ class TDOTAvgSpeedResponder extends Responder
 
     public function respond()
     {
-        libxml_use_internal_errors(true);
         $i = $this->matches[1];
         $dir = strtoupper($this->matches[2]);
 

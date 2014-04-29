@@ -56,3 +56,5 @@ $jarvis_config['merriam_webster_key'] = 'MERRIAM_WEBSTER_KEY';
 
 $jarvis_config['github_access_token'] = 'GITHUB_ACCESS_TOKEN';
 $jarvis_config['github_username'] = 'GITHUB_USERNAME';
+
+$jarvis_config['riverflood_default_gauge'] = 'RIVERFLOOD_DEFAULT_GAUGE'; // e.g. 'omot1' - see http://water.weather.gov/ahps/

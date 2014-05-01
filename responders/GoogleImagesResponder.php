@@ -1,7 +1,7 @@
 <?php
 namespace jt2k\Jarvis;
 
-class GoogleImageResponder extends Responder
+class GoogleImagesResponder extends Responder
 {
     public static $pattern = '^(image|animate) (.+)$';
 

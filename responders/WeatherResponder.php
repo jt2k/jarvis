@@ -141,13 +141,14 @@ class WeatherResponder extends Responder
             return 'Sorry, I could not retrieve the weather from forecast.io.';
         }
 
-        if ($this->matches[1] == 'rain') {
+        if (strtolower($this->matches[1]) == 'rain') {
             return $this->generateRain();
-        }
-        elseif (isset($this->matches[2]) && preg_match('/hourly/', $this->matches[2])) {
-            return $this->generateHourly();
-        } elseif (isset($this->matches[2]) && $this->matches[2]) {
-            return $this->generateForecast();
+        } elseif (!empty($this->matches[2])) {
+            if (preg_match('/hourly/i', $this->matches[2])) {
+                return $this->generateHourly();
+            } else {
+                return $this->generateForecast();
+            }
         } else {
             return $this->generateCurrent();
         }

@@ -5,7 +5,7 @@ class xkcdResponder extends Responder
 {
     public static $pattern = '^xkcd( random)?( [\d]+)?';
 
-    public function respond($redirect = false)
+    public function respond()
     {
         if (isset($this->matches[1]) && $this->matches[1]) {
             return $this->random();

@@ -38,6 +38,7 @@ class RiverFloodResponder extends Responder
         // Get max level
         $max = 0;
         $previous = null;
+        $previous_date = null;
         $trend = null;
         $trend_date = null;
         $max_date = null;
@@ -51,24 +52,25 @@ class RiverFloodResponder extends Responder
             if (!is_null($previous)) {
                 if ($level == $previous && $trend !== 0) {
                     $trend = 0;
-                    $trend_date = $date;
+                    $trend_date = $previous_date;
                 } elseif ($level > $previous) {
                     if ($trend >= 0) {
                         $trend++;
                     } else {
                         $trend = 1;
-                        $trend_date = $date;
+                        $trend_date = $previous_date;
                     }
-                } else {
+                } elseif ($level < $previous) {
                     if ($trend <= 0) {
                         $trend--;
                     } else {
                         $trend = -1;
-                        $trend_date = $date;
+                        $trend_date = $previous_date;
                     }
                 }
             }
             $previous = $level;
+            $previous_date = $date;
         }
         $max_date = date('n/j g:ia', strtotime($max_date));
         $trend_date = date('n/j g:ia', strtotime($trend_date));

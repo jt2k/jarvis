@@ -12,7 +12,6 @@ class RSSResponder extends Responder
         if (isset($this->matches[2])) {
             $index = intval(trim($this->matches[2]));
             $index = $index - 1;
-            $index = min(9, $index);
             $index = max(0, $index);
         }
         $error_level = error_reporting();
@@ -27,16 +26,17 @@ class RSSResponder extends Responder
         $feed->init();
         $feed->handle_content_type();
         if ($index > $feed->get_item_quantity() - 1) {
-            $index = $feed->get_item_quantity();
+            $index = $feed->get_item_quantity() - 1;
         }
         $item = $feed->get_item($index);
 
         $result = null;
         if ($item) {
-            $title = $item->get_title();
+            $title = html_entity_decode($item->get_title());
             $link = $item->get_permalink();
             $date = $item->get_date();
-            $result = "{$date} - {$title} - {$link}";
+            $i = $index + 1;
+            $result = "[{$i}] {$date} - {$title} - {$link}";
         }
         error_reporting($error_level);
 

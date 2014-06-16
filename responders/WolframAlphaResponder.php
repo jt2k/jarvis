@@ -5,12 +5,18 @@ use jt2k\RestApi\WolframAlpha;
 
 class WolframAlphaResponder extends Responder
 {
-    public static $pattern = '^(:?how|when|where|what|who) .+\?$';
+    public static $pattern = '^(?:(?:wa|wolfram|wolfram alpha) (.+)|(?:how|when|where|what|who) .+\?)$';
 
     public function respond()
     {
         if (!$this->requireConfig(array('wolframalpha_appid'))) {
             return;
+        }
+
+        if (isset($this->matches[1])) {
+            $query = $this->matches[1];
+        } else {
+            $query = $this->matches[0];
         }
 
         $wa = new WolframAlpha($this->config['wolframalpha_appid']);
@@ -19,8 +25,8 @@ class WolframAlphaResponder extends Responder
         } else {
             $wa->setCacheLife(false);
         }
-
-        $result = $wa->getAnswer($this->matches[0]);
+        $result = $wa->getAnswer($query);
+        
         if ($result) {
             return $result;
         } else {

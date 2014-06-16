@@ -34,12 +34,12 @@ class WolframAlpha extends RestApi
         $xml = $this->query($input);
         if ((string) $xml['success'] === 'true') {
             $results = $xml->xpath('/queryresult/pod[@title="Result"]/subpod/plaintext');
-            if (is_array($results) && count($results) > 0 && (string) $results[0]) {
+            if (is_array($results) && count($results) > 0 && trim((string) $results[0])) {
                 return (string) $results[0];
             }
 
             $results = $xml->xpath('/queryresult/pod[not(starts-with(@title, "Input"))]/subpod/plaintext');
-            if (is_array($results) && count($results) > 0 && (string) $results[0]) {
+            if (is_array($results) && count($results) > 0 && trim((string) $results[0])) {
                 return (string) $results[0];
             }
 

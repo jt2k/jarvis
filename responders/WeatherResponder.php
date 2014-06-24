@@ -106,7 +106,7 @@ class WeatherResponder extends Responder
                 $precip = round(100 * $hour->precipProbability);
                 $str .= ": {$precip}%, ";
                 $count++;
-                if ($count > 5) {
+                if ($count >= 12) {
                     break;
                 }
             }

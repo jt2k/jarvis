@@ -141,16 +141,20 @@ class WeatherResponder extends Responder
             return 'Sorry, I could not retrieve the weather from forecast.io.';
         }
 
+        $geocode = new GeocodeResponder($this->config, array(), array("geocode {$location}", $location));
+        $location = "Location: " . $geocode->respond();
+
         if (strtolower($this->matches[1]) == 'rain') {
-            return $this->generateRain();
+            $result = $this->generateRain();
         } elseif (!empty($this->matches[2])) {
             if (preg_match('/hourly/i', $this->matches[2])) {
-                return $this->generateHourly();
+                $result = $this->generateHourly();
             } else {
-                return $this->generateForecast();
+                $result = $this->generateForecast();
             }
         } else {
-            return $this->generateCurrent();
+            $result = $this->generateCurrent();
         }
+        return "{$location}\n{$result}";
     }
 }

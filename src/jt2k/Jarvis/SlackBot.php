@@ -36,6 +36,8 @@ class SlackBot extends Bot
             $communication['text'] = preg_replace('/<(http[^\>]+)>/', '$1', $communication['text']);
         }
 
+        $communication['bot_type'] = 'slack';
+
         return $communication;
     }
 

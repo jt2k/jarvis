@@ -14,7 +14,8 @@ class TwilioBot extends Bot
         if (isset($post['Body']) && isset($post['From'])) {
             $communication = array(
                 'text' => $post['Body'],
-                'user_name' => $post['From']
+                'user_name' => $post['From'],
+                'bot_type' => 'twilio'
             );
             $result = $this->generateResponse($communication);
             if ($result) {

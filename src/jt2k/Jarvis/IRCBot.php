@@ -131,9 +131,10 @@ class IRCBot extends Bot
                         }
                         $communication = array(
                             'user_name' => $user,
-                            'text' => $message
+                            'text' => $message,
+                            'bot_type' => 'irc'
                         );
-                        if ($response = $this->generateResponse($communication)) {
+                        if ($response = $this->respond($communication)) {
                             foreach (explode("\n", $response) as $line) {
                                 $this->write("PRIVMSG {$channel} :{$line}");
                                 usleep(800000);

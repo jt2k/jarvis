@@ -59,7 +59,7 @@ class MandrillBot extends Bot
             return false;
         }
 
-        return array('text' => $text, 'user_name' => $msg->from_email);
+        return array('text' => $text, 'user_name' => $msg->from_email, 'bot_type' => 'mandrill');
     }
 
     public function respond(array $communication, \stdClass $msg)

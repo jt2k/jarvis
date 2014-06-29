@@ -1,5 +1,6 @@
 <?php
 namespace jt2k\Jarvis;
+use jt2k\DB\DB;
 
 class Bot
 {
@@ -8,6 +9,7 @@ class Bot
     protected $map = array();
     protected $responders_loaded = false;
     protected $max_response_length = 1024;
+    protected $db;
 
     public function __construct(array $config, $adapter = null)
     {
@@ -22,6 +24,24 @@ class Bot
             $this->name = $this->config['name'];
         }
         $this->loadResponders();
+    }
+
+    protected function getDb()
+    {
+        if (is_object($this->db)) {
+            return $this->db;
+        } elseif (is_array($this->config['database'])) {
+            switch ($this->config['database']['engine']) {
+                case 'mysql':
+                    $dsn = DB::dsnMySQL($this->config['database']['host'], $this->config['database']['schema']);
+                    $this->db = new DB($dsn, $this->config['database']['user'], $this->config['database']['password']);
+                    $this->db->setErrorMode('warning');
+                    return $this->db;
+                    break;
+                default:
+                    throw new \Exception("{$this->config['database']['engine']} database engine not supported");
+            }
+        }
     }
 
     protected function enabledAdapter($adapter)
@@ -74,24 +94,89 @@ class Bot
         $this->responders_loaded = true;
     }
 
+    protected function getUserConfig($user, $bot_type)
+    {
+        $config = array();
+        $db = $this->getDb();
+        $settings = $db->getRows("SELECT * FROM user_settings WHERE user = ? AND bot_type = ?", array($user, $bot_type));
+        foreach ($settings as $setting) {
+            if ($value = unserialize($setting['value'])) {
+                $config[$setting['setting']] = $value;
+            }
+        }
+        return $config;
+    }
+
+    protected function setUserConfig($user, $bot_type, $setting, $value)
+    {
+        // unset
+        if (is_null($value)) {
+            if ($setting == 'all') {
+                $this->getDb()->execute("DELETE FROM user_settings WHERE user = ? AND bot_type = ?", array($user, $bot_type));
+                return "All settings cleared";
+            } else {
+                $this->getDb()->execute("DELETE FROM user_settings WHERE user = ? AND bot_type = ? AND setting = ?", array($user, $bot_type, $setting));
+                return "Cleared {$setting} setting";
+            }
+        }
+
+        // TODO - configure configuratble settings in config.php
+        $available_settings = array('location');
+        if (!in_array($setting, $available_settings)) {
+            return "No user-configurable setting for {$setting}";
+        }
+
+        // special settings that require pre-processing
+        switch ($setting) {
+            case 'location':
+                $ll_regex = '/^(-?[0-9\.]+)[ ,]+(-?[0-9\.]+)$/';
+                if (preg_match($ll_regex, $value, $m)) {
+                    $value = array(floatval($m[1]), floatval($m[2]));
+                } else {
+                    $geocode = new GeocodeResponder($this->config, array(), array("geocode $value", $value));
+                    $result = $geocode->respond();
+                    if (preg_match($ll_regex, $result, $m)) {
+                        $value = array(floatval($m[1]), floatval($m[2]));
+                    } else {
+                        return 'Could not geocode "' . $value . '"';
+                    }
+                }
+                break;
+        }
+
+        $this->getDb()->replace('user_settings', array(
+            'user' => $user,
+            'bot_type' => $bot_type,
+            'setting' => $setting,
+            'value' => serialize($value)
+        ));
+        if (is_array($value) || is_object($value)) {
+            return "Set {$setting} to " . json_encode($value);
+        } else {
+            return "Set {$setting} to {$value}";
+        }
+    }
+
     public function respond($communication)
     {
         $result = $this->generateResponse($communication);
-
         return $result;
     }
 
     protected function generateHelp()
     {
-        $help = '';
+        $help = "Responders:\n";
         foreach ($this->map as $regex => $class_name) {
             $title = $class_name;
             $title = str_replace('Responder', '', $title);
             $title = str_replace(__NAMESPACE__ . '\\', '', $title);
             $help .= "{$title} - {$regex}\n";
         }
-        $help = trim($help);
-
+        $help .= "\nUser settings:\n";
+        $help .= "Set - set [setting] [value]\n";
+        $help .= "Unset - unset [setting]\n";
+        $help .= "Reset - unset all\n";
+        $help .= "List - settings";
         return $help;
     }
 
@@ -122,8 +207,8 @@ class Bot
         $responses = array();
 
         // respond to help command
-        if (isset($this->config['enable_help']) && $this->config['enable_help'] === true && preg_match('/^help(:? |$)/', $command)) {
-            if (preg_match('/^help (.+)$/', $command, $m)) {
+        if (isset($this->config['enable_help']) && $this->config['enable_help'] === true && preg_match('/^help(:? |$)/i', $command)) {
+            if (preg_match('/^help (.+)$/i', $command, $m)) {
                 $module = trim($m[1]);
                 $help = $this->generateModuleHelp($module);
             } else {
@@ -134,11 +219,40 @@ class Bot
             }
         }
 
+        // Handle user setting commands
+        if (isset($communication['user_name']) && isset($communication['bot_type']) && isset($this->config['database'])) {
+            // Set
+             if (preg_match('/^set (\w+) (.+)$/', $command, $m)) {
+                $setting = $this->setUserConfig($communication['user_name'], $communication['bot_type'], $m[1], $m[2]);
+                if ($setting) {
+                    $responses[] = $setting;
+                }
+            }
+            // Unset
+            if (preg_match('/^unset (\w+)$/', $command, $m)) {
+                $setting = $this->setUserConfig($communication['user_name'], $communication['bot_type'], $m[1], null);
+                if ($setting) {
+                    $responses[] = $setting;
+                }
+            }
+            // Get
+            if (preg_match('/^settings$/i', $command, $m)) {
+                $settings = $this->getUserConfig($communication['user_name'], $communication['bot_type']);
+                $responses[] = "Your settings: " . json_encode($settings);
+            }
+        }
+
         if (count($responses) == 0) {
-            // execute matching responders, unless help was triggered
+            // execute matching responders, unless help was triggered or user settings configured
+
+            if (isset($communication['user_name']) && isset($communication['bot_type'])) {
+                $user_config = $this->getUserConfig($communication['user_name'], $communication['bot_type']);
+                $config = array_merge($this->config, $user_config);
+            }
+
             foreach ($this->map as $regex => $class_name) {
                 if (preg_match("/{$regex}/i", $command, $matches)) {
-                    $responder = new $class_name($this->config, $communication, $matches);
+                    $responder = new $class_name($config, $communication, $matches);
                     $response = $responder->respond();
                     if ($this->max_response_length && strlen($response) > $this->max_response_length) {
                         $response = substr($response, 0, $this->max_response_length). '...';

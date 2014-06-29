@@ -24,7 +24,7 @@ if (isset($argv[1])) {
     $args = $argv;
     unset($args[0]);
     $text = join(' ', $args);
-    $response = $bot->respond(array('user_name' => $user, 'text' => $text));
+    $response = $bot->respond(array('user_name' => $user, 'text' => $text, 'bot_type' => 'cli'));
     if ($response) {
         echo "{$response}\n";
     }
@@ -72,7 +72,7 @@ while (1) {
     }
 
     // respond
-    $response = $bot->respond(array('user_name' => $user, 'text' => $input));
+    $response = $bot->respond(array('user_name' => $user, 'text' => $input, 'bot_type' => 'cli'));
     if ($response) {
         echo "{$response}\n";
     }

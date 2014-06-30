@@ -19,17 +19,6 @@ if (isset($_SERVER['USER'])) {
 require __DIR__ . '/../bootstrap.php';
 $bot = new Bot($jarvis_config, 'console');
 
-// if a string is passed in as argument, just respond to the query and exit
-if (isset($argv[1])) {
-    $args = $argv;
-    unset($args[0]);
-    $text = join(' ', $args);
-    $response = $bot->respond(array('user_name' => $user, 'text' => $text, 'bot_type' => 'cli'));
-    if ($response) {
-        echo "{$response}\n";
-    }
-    exit;
-}
 
 // enable readline if available and set persistent history file
 if (function_exists('readline')) {
@@ -43,6 +32,24 @@ if (function_exists('readline')) {
 } else {
     $readline = false;
 }
+
+// if a string is passed in as argument, just respond to the query and exit
+if (isset($argv[1])) {
+    $args = $argv;
+    unset($args[0]);
+    $text = join(' ', $args);
+    $response = $bot->respond(array('user_name' => $user, 'text' => $text, 'bot_type' => 'cli'));
+    if ($response) {
+        echo "{$response}\n";
+    }
+    if ($readline && $readline_history_file) {
+        readline_add_history($text);
+        readline_write_history($readline_history_file);
+    }
+
+    exit;
+}
+
 
 // set up prompt
 if (isset($jarvis_config['name']) && $jarvis_config['name']) {

@@ -245,9 +245,11 @@ class Bot
         if (count($responses) == 0) {
             // execute matching responders, unless help was triggered or user settings configured
 
-            if (isset($communication['user_name']) && isset($communication['bot_type'])) {
+            if (isset($communication['user_name']) && isset($communication['bot_type']) && isset($this->config['database'])) {
                 $user_config = $this->getUserConfig($communication['user_name'], $communication['bot_type']);
                 $config = array_merge($this->config, $user_config);
+            } else {
+                $config = $this->config;
             }
 
             foreach ($this->map as $regex => $class_name) {

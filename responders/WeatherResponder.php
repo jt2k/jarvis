@@ -7,7 +7,7 @@ namespace jt2k\Jarvis;
  */
 class WeatherResponder extends Responder
 {
-    public static $pattern = '(weather|temperature|rain)( hourly( \d+)?| forecast( \d+)?)?';
+    public static $pattern = '^(weather|temperature|rain)( hourly( \d+)?| forecast( \d+)?)?';
     public static $help = array(
         'weather - returns current temperature and conditions',
         'temperature - returns current temperature and conditions',

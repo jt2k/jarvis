@@ -19,13 +19,16 @@ class WikipediaResponder extends Responder
         }
 
         $title = urlencode($title);
-        $url = "http://en.wikipedia.org/w/api.php?action=query&titles={$title}&prop=info&inprop=url&format=json";
+        $url = "http://en.wikipedia.org/w/api.php?action=query&titles={$title}&prop=info|extracts&inprop=url&exintro=1&format=json";
         $results = $this->request($url);
         if (is_object($results) && is_object($results->query) && is_object($results->query->pages)) {
             $arr  = (array) $results->query->pages;
             $page = current($arr);
-
-            return $page->fullurl;
+            $content = trim(strip_tags($page->extract));
+            $content = preg_replace('/\s+/m', ' ', $content);
+            $content = substr($content, 0, 400);
+            $content = preg_replace('/ [^ ]+$/', '', $content);
+            return "{$content}...\n{$page->fullurl}";
         }
 
         return false;

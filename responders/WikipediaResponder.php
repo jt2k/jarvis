@@ -7,17 +7,13 @@ class WikipediaResponder extends Responder
 
     public function respond()
     {
-        // There's probably a better way to do this.
-        // Currently, doing search to get title, then looking up title to get URL
-
         $search = urlencode($this->matches[1]);
         $url = "http://en.wikipedia.org/w/api.php?action=query&list=search&srsearch={$search}&srlimit=1&format=json";
         $results = $this->request($url);
-        $title = $results->query->search[0]->title;
-        if (!$title) {
+        if (!isset($results->query->search) || count($results->query->search) == 0) {
             return false;
         }
-
+        $title = $results->query->search[0]->title;
         $title = urlencode($title);
         $url = "http://en.wikipedia.org/w/api.php?action=query&titles={$title}&prop=info|extracts&inprop=url&exintro=1&format=json";
         $results = $this->request($url);

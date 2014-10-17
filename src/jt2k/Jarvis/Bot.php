@@ -52,12 +52,21 @@ class Bot
 
     protected function loadAllResponders()
     {
-        foreach (glob("{$this->config['responders_directory']}/*Responder.php") as $file) {
-            if (preg_match('/\/([^\/]+Responder)\.php$/', $file, $m)) {
-                require_once $file;
-                $class_name = __NAMESPACE__ . '\\' . $m[1];
-                if ($class_name::$pattern) {
-                    $this->map[$class_name::$pattern] = $class_name;
+        $directories = $this->config['responders_directory'];
+        if (!is_array($directories)) {
+            $directories = array($directories);
+        }
+        foreach ($directories as $directory) {
+            if (!is_dir($directory)) {
+                throw new \Exception("Could not find responders directory {$directory}");
+            }
+            foreach (glob("{$directory}/*Responder.php") as $file) {
+                if (preg_match('/\/([^\/]+Responder)\.php$/', $file, $m)) {
+                    require_once $file;
+                    $class_name = __NAMESPACE__ . '\\' . $m[1];
+                    if ($class_name::$pattern) {
+                        $this->map[$class_name::$pattern] = $class_name;
+                    }
                 }
             }
         }

@@ -2,3 +2,4 @@ cache/*
 !cache/.gitkeep
 vendor
 config.php
+composer.lock

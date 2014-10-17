@@ -1,15 +1,4 @@
 <?php
-spl_autoload_register(function ($class) {
-    foreach (array('/src/') as $dir) {
-        $file = __DIR__ . $dir . str_replace('\\', '/', $class) . '.php';
-        if (file_exists($file)) {
-            require $file;
-
-            return;
-        }
-    }
-});
-
 if (file_exists(__DIR__ . '/vendor/autoload.php')) {
     require __DIR__ . '/vendor/autoload.php';
 }

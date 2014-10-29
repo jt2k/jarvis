@@ -7,17 +7,17 @@ namespace jt2k\Jarvis;
  */
 class WeatherResponder extends Responder
 {
-    public static $pattern = '^(weather|temperature|rain)( hourly( \d+)?| forecast( \d+)?)?';
+    public static $pattern = '^(weather|temperature|rain|snow|precipitation)( hourly( \d+)?| forecast( \d+)?)?';
     public static $help = array(
         'weather - returns current temperature and conditions',
         'temperature - returns current temperature and conditions',
-        'rain - returns the probabilty of rain for the next 24 hours',
+        'rain|snow|precipitation - returns the probabilty of precipitation for the next 24 hours',
         'weather foreacst - returns weather foreacst for the next hour, today, and tomorrow',
-        'weather foreacst [n] - returns weather foreacst for the next n days',
+        'weather foreacst [n] - returns weather forecast for the next n days',
         'weather hourly - returns hourly temperature forecast',
         'weather hourly [n] - returns hourly temperature forecast for the next n hours',
     );
-    public static $help_words = array('temperature', 'rain');
+    public static $help_words = array('temperature', 'rain', 'snow', 'precipitation');
 
     protected $data;
 
@@ -92,9 +92,9 @@ class WeatherResponder extends Responder
         return $string;
     }
 
-    protected function generateRain()
+    protected function generatePrecipitation()
     {
-        $str = 'Currently: ' . round(100 * $this->data->currently->precipProbability) . "% chance of rain\n";
+        $str = 'Currently: ' . round(100 * $this->data->currently->precipProbability) . "% chance of precipitation\n";
         $count = 0;
         for ($i = 1; $i <= 24; $i++) {
             if (!isset($this->data->hourly->data[$i])) {
@@ -112,7 +112,7 @@ class WeatherResponder extends Responder
             }
         }
         if ($count == 0) {
-            $str .= "No chance of rain in the next 24 hours";
+            $str .= "No chance of precipitation in the next 24 hours";
         }
         $str = trim($str, ', ');
         return $str;
@@ -144,8 +144,8 @@ class WeatherResponder extends Responder
         $geocode = new GeocodeResponder($this->config, array(), array("geocode {$location}", $location));
         $location = "Location: " . $geocode->respond();
 
-        if (strtolower($this->matches[1]) == 'rain') {
-            $result = $this->generateRain();
+        if (in_array(strtolower($this->matches[1]), array('rain', 'snow', 'precipitation'))) {
+            $result = $this->generatePrecipitation();
         } elseif (!empty($this->matches[2])) {
             if (preg_match('/hourly/i', $this->matches[2])) {
                 $result = $this->generateHourly();

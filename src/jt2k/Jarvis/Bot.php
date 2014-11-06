@@ -78,13 +78,21 @@ class Bot
             return;
         }
 
+        $directories = $this->config['responders_directory'];
+        if (!is_array($directories)) {
+            $directories = array($directories);
+        }
+
         foreach ($this->config['enabled_responders'] as $name) {
-            $file = "{$this->config['responders_directory']}/{$name}Responder.php";
-            if (file_exists($file)) {
-                require_once $file;
-                $class_name = __NAMESPACE__ . '\\' . $name . 'Responder';
-                if ($class_name::$pattern) {
-                    $this->map[$class_name::$pattern] = $class_name;
+            foreach ($directories as $directory) {
+                $file = "{$directory}/{$name}Responder.php";
+                if (file_exists($file)) {
+                    require_once $file;
+                    $class_name = __NAMESPACE__ . '\\' . $name . 'Responder';
+                    if ($class_name::$pattern) {
+                        $this->map[$class_name::$pattern] = $class_name;
+                    }
+                    continue;
                 }
             }
         }

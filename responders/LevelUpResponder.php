@@ -91,6 +91,6 @@ class LevelUpResponder extends Responder
             $trait = self::$traits[rand(0, count(self::$traits) - 1)];
             $r .= "> +{$bonus} _{$trait}_\n";
         }
-        return $r;
+        return trim($r);
     }
 }

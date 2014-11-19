@@ -8,7 +8,7 @@ class LevelUpResponder extends Responder
     const TRAIT_MIN = 2;
     const TRAIT_MAX = 4;
     const BONUS_MIN = 1;
-    const BONUS_MAX = 10;
+    const BONUS_MAX = 8;
     
     private static $traits = array(
         'Accident-Prone',

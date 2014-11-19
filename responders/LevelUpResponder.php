@@ -3,7 +3,7 @@ namespace jt2k\Jarvis;
 
 class LevelUpResponder extends Responder
 {
-    public static $pattern = '(level|lvl)\s*up\s*(.+)';
+    public static $pattern = '(level|lvl)\s*(up|down)\s*(.+)';
     
     const TRAIT_MIN = 2;
     const TRAIT_MAX = 4;
@@ -83,8 +83,19 @@ class LevelUpResponder extends Responder
     );
     
     public function respond($redirect = false) {
-        $hero = $this->matches[2];
-        $r = ":sparkles: *LEVEL UP* :sparkles: {$hero} gained a level!\n";
+        $direction = strtoupper($this->matches[2]);
+        $hero = $this->matches[3];
+        if ($direction === 'UP') {
+            $lvlIcon = 'sparkles';
+            $modifier = '+';
+            $lvlAction = 'gained';
+        }
+        elseif ($direction === 'DOWN') {
+            $lvlIcon = 'skull';
+            $modifier = '-';
+            $lvlAction = 'lost';
+        }
+        $r = ":{$lvlIcon}: *LEVEL {$direction}* :{$lvlIcon}: {$hero} {$lvlAction} a level!\n";
         $gained = rand(self::TRAIT_MIN, self::TRAIT_MAX);
         $dupes = array();
         for ($i = 0; $i < $gained; $i++) {
@@ -93,7 +104,7 @@ class LevelUpResponder extends Responder
                 $trait = self::$traits[rand(0, count(self::$traits) - 1)];
             } while (isset($dupes[$trait]));
             $dupes[$trait] = true;
-            $r .= "> +{$bonus} _{$trait}_\n";
+            $r .= "> {$modifier}{$bonus} _{$trait}_\n";
         }
         return trim($r);
     }

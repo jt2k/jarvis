@@ -86,9 +86,13 @@ class LevelUpResponder extends Responder
         $hero = $this->matches[2];
         $r = ":sparkles: *LEVEL UP* :sparkles: {$hero} gained a level!\n";
         $gained = rand(self::TRAIT_MIN, self::TRAIT_MAX);
+        $dupes = array();
         for ($i = 0; $i < $gained; $i++) {
             $bonus = rand(self::BONUS_MIN, self::BONUS_MAX);
-            $trait = self::$traits[rand(0, count(self::$traits) - 1)];
+            do {
+                $trait = self::$traits[rand(0, count(self::$traits) - 1)];
+            } while (isset($dupes[$trait]));
+            $dupes[$trait] = true;
             $r .= "> +{$bonus} _{$trait}_\n";
         }
         return trim($r);

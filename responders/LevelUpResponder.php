@@ -3,7 +3,14 @@ namespace jt2k\Jarvis;
 
 class LevelUpResponder extends Responder
 {
-    public static $pattern = '(level|lvl)\s*(up|(down|dn))\s*(.+)';
+    /**
+     * Examples:
+     * level up foo
+     * lvl up foo
+     * lvlup foo
+     * foo++
+     */
+    public static $pattern = '((level|lvl)\s*(up|(down|dn))\s*(.+))|((.+)\s*(\+\+|\-\-))';
     
     const TRAIT_MIN = 2;
     const TRAIT_MAX = 4;
@@ -140,9 +147,20 @@ class LevelUpResponder extends Responder
     );
     
     public function respond($redirect = false) {
-        $direction = strtoupper($this->matches[2]);
-        if ($direction === 'DN') $direction = 'DOWN';
-        $hero = $this->matches[4];
+        if ($this->matches[8] === '++') {
+            $direction = 'UP';
+            $hero = $this->matches[7];
+        }
+        elseif ($this->matches[8] === '--') {
+            $direction = 'DOWN';
+            $hero = $this->matches[7];
+        }
+        else {
+            $direction = strtoupper($this->matches[3]);
+            if ($direction === 'DN') $direction = 'DOWN';
+            $hero = $this->matches[5];
+        }
+        $hero = trim($hero);
         if ($direction === 'UP') {
             $lvlIcon = 'sparkles';
             $modifier = '+';

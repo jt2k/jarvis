@@ -3,12 +3,20 @@ namespace jt2k\Jarvis;
 
 class LevelUpResponder extends Responder
 {
-    public static $pattern = '(level|lvl)\s*(up|down)\s*(.+)';
+    /**
+     * Examples:
+     * level up foo
+     * lvl up foo
+     * lvlup foo
+     * foo++
+     */
+    public static $pattern = '((level|lvl)\s*(up|(down|dn))\s*(.+))|((.+)\s*(\+\+|\-\-))';
     
     const TRAIT_MIN = 2;
     const TRAIT_MAX = 4;
     const BONUS_MIN = 1;
     const BONUS_MAX = 8;
+    const TREASURE_PCT = 0.4;
     
     private static $traits = array(
         'Accident-Prone',
@@ -82,9 +90,77 @@ class LevelUpResponder extends Responder
         'Warcrafting'
     );
     
+    private static $adjectives = array(
+        'adamantium',
+        'antique',
+        'blessed',
+        'cursed',
+        'Elvish',
+        'enchanted',
+        'gilded',
+        'holy',
+        'jankety',
+        'jewel-encrusted',
+        'magic',
+        'mithril',
+        'shoddy',
+        'spectral',
+        'uranium-enriched'
+    );
+    
+    private static $treasure = array(
+        'alethiometer',
+        'Amazon delivery drone',
+        'bowcaster',
+        'crème brûlée',
+        'Dvorak keyboard',
+        'e-cigarette',
+        'first edition copy of Dianetics',
+        'flu vaccine',
+        'French press',
+        'grenade',
+        'Honda Civic',
+        'horcrux',
+        'ion cannon',
+        'iPhone',
+        'jQuery plugin',
+        'klaxon',
+        'lightsaber',
+        'Luck dragon',
+        'maser',
+        'nanoprobe',
+        'orrery',
+        'paintball gun',
+        'phaser',
+        'QWERTY keyboard',
+        'railgun',
+        'shiv',
+        'smartwatch',
+        'Star Trek Voyager DVD set',
+        'taser',
+        'USB stick',
+        'vortex',
+        'warp drive',
+        'xylophone',
+        'YOLO t-shirt',
+        'zeppelin'
+    );
+    
     public function respond($redirect = false) {
-        $direction = strtoupper($this->matches[2]);
-        $hero = $this->matches[3];
+        if ($this->matches[8] === '++') {
+            $direction = 'UP';
+            $hero = $this->matches[7];
+        }
+        elseif ($this->matches[8] === '--') {
+            $direction = 'DOWN';
+            $hero = $this->matches[7];
+        }
+        else {
+            $direction = strtoupper($this->matches[3]);
+            if ($direction === 'DN') $direction = 'DOWN';
+            $hero = $this->matches[5];
+        }
+        $hero = trim($hero);
         if ($direction === 'UP') {
             $lvlIcon = 'sparkles';
             $modifier = '+';
@@ -105,6 +181,19 @@ class LevelUpResponder extends Responder
             } while (isset($dupes[$trait]));
             $dupes[$trait] = true;
             $r .= "> {$modifier}{$bonus} _{$trait}_\n";
+        }
+        // check for treasure
+        if (rand(1, 10) <= 10 * self::TREASURE_PCT) {
+            $adj = self::$adjectives[rand(0, count(self::$adjectives) - 1)];
+            $a = preg_match('/[aeiou]/i', substr($adj, 0, 1)) === 1 ? 'an' : 'a';
+            $item = self::$treasure[rand(0, count(self::$treasure) - 1)];
+            if ($direction === 'UP') {
+                $r .= ":gem: _TREASURE!_ {$hero} found $a ";
+            }
+            elseif ($direction === 'DOWN') {
+                $r .= ":smiling_imp: _THIEF!_ An imp stole {$hero}'s ";
+            }
+            $r .= "$adj *$item*\n";
         }
         return trim($r);
     }

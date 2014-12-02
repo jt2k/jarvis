@@ -147,11 +147,11 @@ class LevelUpResponder extends Responder
     );
     
     public function respond($redirect = false) {
-        if ($this->matches[8] === '++') {
+        if (isset($this->matches[8]) && $this->matches[8] === '++') {
             $direction = 'UP';
             $hero = $this->matches[7];
         }
-        elseif ($this->matches[8] === '--') {
+        elseif (isset($this->matches[8]) && $this->matches[8] === '--') {
             $direction = 'DOWN';
             $hero = $this->matches[7];
         }

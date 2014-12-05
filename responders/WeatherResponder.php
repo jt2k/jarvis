@@ -153,7 +153,7 @@ class WeatherResponder extends Responder
             $result = $this->generateCurrent();
         }
 
-        if ($geocode = $this->callResponder('Geocode', "geocode {$location}")) {
+        if (($geocode = $this->callResponder('Geocode', "geocode {$location}")) && $geocode != 'Not found') {
             $result = "Location: {$geocode}\n{$result}";
         }
 

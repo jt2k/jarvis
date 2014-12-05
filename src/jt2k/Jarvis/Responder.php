@@ -57,6 +57,26 @@ abstract class Responder
         return $enabled;
     }
 
+    protected function callResponder($name, $command)
+    {
+        if (!preg_match('/.+Responder$/', $name)) {
+            $name .= 'Responder';
+        }
+        $class = __NAMESPACE__ . '\\' . $name;
+
+        if (!class_exists($class)) {
+            return false;
+        }
+
+        $regex = $class::$pattern;
+        if (preg_match("/{$regex}/i", $command, $matches)) {
+            $responder = new $class($this->config, array(), $matches);
+            return $responder->respond();
+        }
+
+        return false;
+    }
+
     protected function request($url, $cache_ttl = false, $cache_ext = '', $format = 'json')
     {
         $restapi = new RestApi();

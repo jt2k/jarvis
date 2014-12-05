@@ -141,9 +141,6 @@ class WeatherResponder extends Responder
             return 'Sorry, I could not retrieve the weather from forecast.io.';
         }
 
-        $geocode = new GeocodeResponder($this->config, array(), array("geocode {$location}", $location));
-        $location = "Location: " . $geocode->respond();
-
         if (in_array(strtolower($this->matches[1]), array('rain', 'snow', 'precipitation'))) {
             $result = $this->generatePrecipitation();
         } elseif (!empty($this->matches[2])) {
@@ -155,6 +152,11 @@ class WeatherResponder extends Responder
         } else {
             $result = $this->generateCurrent();
         }
-        return "{$location}\n{$result}";
+
+        if ($geocode = $this->callResponder('Geocode', "geocode {$location}")) {
+            $result = "Location: {$geocode}\n{$result}";
+        }
+
+        return $result;
     }
 }

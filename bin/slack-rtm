@@ -1,0 +1,14 @@
+#!/usr/bin/env php
+<?php
+if (php_sapi_name() != 'cli') {
+    die;
+}
+
+use jt2k\Jarvis\SlackRTMBot;
+
+require __DIR__ . '/../bootstrap.php';
+$jarvis = new SlackRTMBot($jarvis_config);
+if (isset($argv[1]) && $argv[1] == 'debug') {
+    $jarvis->setDebug(true);
+}
+$jarvis->connect();

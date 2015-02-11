@@ -218,7 +218,7 @@ class Bot
         $command = trim($communication['text']);
         if (isset($this->config['name']) && $this->config['name']) {
             $name = preg_quote($this->config['name']);
-            $command = trim(preg_replace("/^{$name}[ :,\-]*/i", '', $command));
+            $command = trim(preg_replace("/^{$name}[:,\-]*/i", '', $command));
         }
 
         $responses = array();

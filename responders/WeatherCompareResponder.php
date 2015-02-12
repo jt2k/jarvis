@@ -52,17 +52,29 @@ class WeatherCompareResponder extends Responder
         $hourlyB = array();
 
         $xTicks = array();
-        for ($i = 1; $i <= 25; $i+=8) {
+
+        $start = 1;
+        $end = 25;
+        if ((int)date('i') < 30) {
+            $start = 0;
+            $end = 24;
+        }
+        for ($i = $start; $i <= $end; $i+=8) {
             // Use location A for x-axis labels
             $xTicks[] = $this->formatTime('ga', $this->weatherA->hourly->data[$i]->time);
         }
-        for ($i = 1; $i <= 25; $i++) {
+        for ($i = $start; $i <= $end; $i++) {
             $hourlyA[] = round($this->weatherA->hourly->data[$i]->temperature);
             $hourlyB[] = round($this->weatherB->hourly->data[$i]->temperature);
         }
         $dataA = implode(',', $hourlyA);
         $dataB = implode(',', $hourlyB);
-        return "https://chart.googleapis.com/chart?cht=lc&chs=450x200&chd=t:{$dataA}|{$dataB}&chxt=x,y&chds=a&chco=990000,0000CC&chdl=" . urlencode($this->locationA) . '|' . urlencode($this->locationB) . "&chxl=0:|" . implode('|', $xTicks);
+        if ($this->weatherA->currently->temperature > $this->weatherB->currently->temperature) {
+            $colors = '990000,0000CC';
+        } else {
+            $colors = '0000CC,990000';
+        }
+        return "https://chart.googleapis.com/chart?cht=lc&chs=450x200&chd=t:{$dataA}|{$dataB}&chxt=x,y&chds=a&chco={$colors}&chdl=" . urlencode($this->locationA) . '|' . urlencode($this->locationB) . "&chxl=0:|" . implode('|', $xTicks);
     }
 
     protected function getCoords($location)

@@ -111,7 +111,8 @@ class RiverFloodResponder extends Responder
         if ($max_category) {
             $string .= " *{$max_category}*";
         }
-        $string .= "\nhttp://water.weather.gov/resources/hydrographs/{$id}_hg.png";
+        $ts = time();
+        $string .= "\nhttp://water.weather.gov/resources/hydrographs/{$id}_hg.png?{$ts}";
 
         return $string;
     }

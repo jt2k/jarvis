@@ -5,7 +5,7 @@ use jt2k\RestApi\WolframAlpha;
 
 class WolframAlphaResponder extends Responder
 {
-    public static $pattern = '^(?:(?:wa|wolfram|wolfram alpha) (.+)|(?:how|when|where|what|who) .+\?)$';
+    public static $pattern = '^(?:(?:wa|wolfram|wolfram alpha) (.+)|(?:how|when|where|what|who|which) .+\?)$';
 
     public function respond()
     {

@@ -38,96 +38,71 @@ class SlackRTMBot extends Bot
             )
         ));
         if (is_object($result) && !empty($result->url)) {
-            $this->client = new \Wrench\Client(
-                $result->url,
-                'http://slack.com/',
-                array('on_data_callback' => array($this, 'payloadCallback'))
-            );
-            if ($this->client->connect()) {
-                $this->connected = true;
-                $this->listen();
-            } else {
-                throw new \Exception('Failed to connect');
-            }
-
-        }
-    }
-
-    protected function send($event)
-    {  
-        $this->id++;
-        $this->client->sendData(json_encode($event));
-    }
-
-    public function payloadCallback($payload)
-    {
-        $json = $payload->getPayload();
-        $event = json_decode($json);
-        if (!is_object($event)) {
-            return;
-        }
-        if ($this->debug) {
-            echo "Received event:\n";
-            print_r($event);
-        }
-        if (isset($event->type) && $event->type == 'message' && empty($event->subtype)) {
-            $user = $event->user; // TODO: get username
-            $channel = $event->channel;
-            $message = $event->text;
-            $message = preg_replace('/<(http[^\|]+)\|[^>]+>/', '$1', $message);
-            $message = preg_replace('/<(http[^\>]+)>/', '$1', $message);
-
-            $communication = array(
-                'user_name' => $user,
-                'text' => $message,
-                'bot_type' => 'slack'
-            );
-
-            if ($response = $this->respond($communication)) {
-                $responseEvent = array(
-                    'id' => $this->id,
-                    'type' => 'message',
-                    'channel' => $channel,
-                    'text' => $response
-                );
-                $this->send($responseEvent);
-            }
-        }
-    }
-
-    protected function ping()
-    {
-        $event = array(
-            'id' => $this->id,
-            'type' => 'ping'
-        );
-        $this->send($event);
-    }
-
-    protected function listen()
-    {
-        $lastPing = 0;
-        while (true) {
+            $loop = \React\EventLoop\Factory::create();
+            $logger = new \Zend\Log\Logger();
             if ($this->debug) {
-                echo ".";
+                $writer = new \Zend\Log\Writer\Stream("php://output");
+            } else {
+                $writer = new \Zend\Log\Writer\Noop;
             }
-            if ($lastPing < time() - 2) {
-                $this->ping();
-                $lastPing = time();
-            }
-            $this->client->receive();
-        }
-    }
+            $logger->addWriter($writer);
+            $this->client = $client = new \Devristo\Phpws\Client\WebSocket($result->url, $loop, $logger);
 
-    protected function disconnect()
-    {
-        if ($this->connected) {
-            $this->client->disconnect();
+            $client->on("connect", function() use ($logger, $client){
+                $logger->notice("Connected");
+            });
+
+            $client->on("message", function($message) use ($client, $logger){
+                $event = json_decode($message->getData());
+                if (!is_object($event)) {
+                    $logger->warning("Invalid JSON");
+                    return;
+                }
+                $logger->notice("Received message:\n" . print_r($event, true));
+
+                if (isset($event->type) && $event->type == 'message' && empty($event->subtype)) {
+                    $user = $event->user; // TODO: get username
+                    $channel = $event->channel;
+                    $message = $event->text;
+                    $message = preg_replace('/<(http[^\|]+)\|[^>]+>/', '$1', $message);
+                    $message = preg_replace('/<(http[^\>]+)>/', '$1', $message);
+
+                    $communication = array(
+                        'user_name' => $user,
+                        'text' => $message,
+                        'bot_type' => 'slack'
+                    );
+
+                    if ($response = $this->respond($communication)) {
+                        $responseEvent = array(
+                            'id' => $this->id,
+                            'type' => 'message',
+                            'channel' => $channel,
+                            'text' => $response
+                        );
+                        $logger->notice("Sending message:\n" . print_r($responseEvent, true));
+                        $client->send(json_encode($responseEvent));
+                    }
+                }
+            });
+
+            $loop->addPeriodicTimer(5, function() use($client, $logger){
+                $id = ++$this->id;
+                $logger->info('Sending ping');
+                $event = array(
+                    'id' => $id,
+                    'type' => 'ping'
+                );
+                $client->send(json_encode($event));
+            });
+
+            $client->open();
+            $loop->run();
         }
     }
 
     public function __destruct()
     {
-        $this->disconnect();
+        $this->client->close();
     }
 }

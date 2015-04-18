@@ -1,4 +1,12 @@
 <?php
+/*
+ * NOTE: Only use this web-based OAuth workflow if you want to set up your
+ * SlackRTM responder to connect as regular (non-bot) user.
+ *
+ * If you simply want to create a new bot user, go here:
+ * https://my.slack.com/services/new/bot
+ * You will be able to copy your OAuth token from there.
+ */
 use jt2k\RestApi\RestApi;
 
 require '../bootstrap.php';
@@ -17,7 +25,8 @@ if (isset($jarvis_config['slack_oauth_token'])) {
     exit("Slack authentication has already been completed\n");
 }
 
-$redirect_uri = 'http://' . $_SERVER['HTTP_HOST'] . '/slack-auth.php';
+$path = preg_replace('/\?.*$/', '', $_SERVER['REQUEST_URI']);
+$redirect_uri = 'http' . (isset($_SERVER['HTTPS']) ? 's' : '') . '://' . $_SERVER['HTTP_HOST'] . $path;
 
 if (empty($_GET['code'])) {
     $state = 'start';
@@ -43,7 +52,7 @@ if (empty($_GET['code'])) {
     <?php else: ?>
         <?php if (is_object($result) && !empty($result->access_token)): ?>
             <p>Successuflly authorized!</p>
-            <p>Access token: <input type="text" value="<?php echo htmlspecialchars($result->access_token); ?>" />
+            <p>Copy into config.php: <input type="text" value="<?php echo htmlspecialchars('$jarvis_config[\'slack_oauth_token\'] = \'' . $result->access_token) . '\';'; ?>" size="100"/></p>
         <?php else: ?>
             <p>Error retrieving access token. Result:</p>
             <pre><?php var_dump($result); ?></pre>

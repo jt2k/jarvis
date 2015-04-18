@@ -1,6 +1,9 @@
 <?php
 namespace jt2k\Jarvis;
+
 use jt2k\DB\DB;
+use DateTime;
+use Exception;
 
 class Bot
 {
@@ -9,13 +12,15 @@ class Bot
     protected $map = array();
     protected $responders_loaded = false;
     protected $max_response_length = 1024;
+    protected $start;
     protected $db;
 
     public function __construct(array $config, $adapter = null)
     {
+        $this->start = new DateTime();
         $this->config = $config;
         if ($adapter && !$this->enabledAdapter($adapter)) {
-            throw new \Exception("{$adapter} adpater is disabled");
+            throw new Exception("{$adapter} adpater is disabled");
         }
         if (isset($this->config['max_response_length'])) {
             $this->max_response_length = $this->config['max_response_length'];
@@ -39,7 +44,7 @@ class Bot
                     return $this->db;
                     break;
                 default:
-                    throw new \Exception("{$this->config['database']['engine']} database engine not supported");
+                    throw new Exception("{$this->config['database']['engine']} database engine not supported");
             }
         }
     }
@@ -58,7 +63,7 @@ class Bot
         }
         foreach ($directories as $directory) {
             if (!is_dir($directory)) {
-                throw new \Exception("Could not find responders directory {$directory}");
+                throw new Exception("Could not find responders directory {$directory}");
             }
             foreach (glob("{$directory}/*Responder.php") as $file) {
                 if (preg_match('/\/([^\/]+Responder)\.php$/', $file, $m)) {
@@ -197,6 +202,38 @@ class Bot
         return $help;
     }
 
+    protected function generateStatus()
+    {
+        $convertBytes = function($bytes) {
+            if ($bytes < 1024) {
+                return $bytes . 'B';
+            } elseif ($bytes < (1024*1024)) {
+                return number_format($bytes/1024, 2) . 'KB';
+            } else {
+                return number_format($bytes/(1024*1024), 2) . 'MB';
+            }
+        };
+        $status = '';
+        $botType = get_class($this);
+        $botType = preg_replace('/^.*\\\\/', '', $botType);
+        $status .= "Bot type: {$botType}\n";
+        $status .= "PID: " . getmypid() . "\n";
+        $memory = memory_get_usage(true);
+        $peakMemory = memory_get_peak_usage(true);
+        $status .= "Memory usage: " . $convertBytes($memory) . "\n";
+        if ($peakMemory > $memory) {
+            $status .= "Memory usage (peak): " . $convertBytes($peakMemory) . "\n";
+        }
+        $now = new DateTime();
+        $seconds = $now->getTimestamp() - $this->start->getTimestamp();
+        if ($seconds > 1) {
+            $interval = $this->start->diff($now);
+            $status .= "Uptime: {$interval->days} day" . ($interval->days != 1 ? 's' : '') . ', ' . $interval->format('%H:%I:%S');
+        }
+
+        return trim($status);
+    }
+
     protected function generateModuleHelp($module)
     {
         foreach ($this->map as $regex => $class_name) {
@@ -233,6 +270,14 @@ class Bot
             }
             if ($help) {
                 $responses[] = $help;
+            }
+        }
+
+        // respond to status command
+        if (isset($this->config['enable_status']) && $this->config['enable_status'] === true && preg_match('/^status$/i', $command)) {
+            $status = $this->generateStatus();
+            if ($status) {
+                $responses[] = $status;
             }
         }
 

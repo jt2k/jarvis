@@ -1,10 +1,13 @@
 #!/usr/bin/env php
 <?php
+namespace jt2k\Jarvis;
+
 if (php_sapi_name() != 'cli') {
     die;
 }
-
-use jt2k\Jarvis\SlackRTMBot;
+if (function_exists('cli_set_process_title')) {
+    @cli_set_process_title('jarvis-slackrtm');
+}
 
 require __DIR__ . '/../bootstrap.php';
 $jarvis = new SlackRTMBot($jarvis_config);

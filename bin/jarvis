@@ -5,9 +5,6 @@ namespace jt2k\Jarvis;
 if (php_sapi_name() != 'cli') {
     die;
 }
-if (function_exists('cli_set_process_title')) {
-    @cli_set_process_title('jarvis');
-}
 
 // get username
 if (isset($_SERVER['USER'])) {
@@ -57,8 +54,13 @@ if (isset($argv[1])) {
 // set up prompt
 if (isset($jarvis_config['name']) && $jarvis_config['name']) {
     $prompt = "{$jarvis_config['name']}> ";
+    $process_title = "jarvis [{$jarvis_config['name']}]";
 } else {
-    $prompt = "jarvis> ";
+    $prompt = 'jarvis> ';
+    $process_title = 'jarvis';
+}
+if (function_exists('cli_set_process_title')) {
+    @cli_set_process_title($process_title);
 }
 
 while (1) {

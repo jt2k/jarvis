@@ -5,11 +5,18 @@ namespace jt2k\Jarvis;
 if (php_sapi_name() != 'cli') {
     die;
 }
-if (function_exists('cli_set_process_title')) {
-    @cli_set_process_title('jarvis-irc');
-}
 
 require __DIR__ . '/../bootstrap.php';
+
+if (function_exists('cli_set_process_title')) {
+    if (isset($jarvis_config['name']) && $jarvis_config['name']) {
+        $process_title = "jarvis-irc [{$jarvis_config['name']}]";
+    } else {
+        $process_title = 'jarvis-irc';
+    }
+    @cli_set_process_title($process_title);
+}
+
 $jarvis = new IRCBot($jarvis_config);
 if (isset($argv[1]) && $argv[1] == 'debug') {
     $jarvis->setDebug(true);

@@ -199,6 +199,7 @@ class Bot
         $help .= "Unset - unset [setting]\n";
         $help .= "Reset - unset all\n";
         $help .= "List - settings";
+
         return $help;
     }
 
@@ -318,10 +319,13 @@ class Bot
                 if (preg_match("/{$regex}/i", $command, $matches)) {
                     $responder = new $class_name($config, $communication, $matches);
                     $response = $responder->respond();
-                    if ($this->max_response_length && strlen($response) > $this->max_response_length) {
-                        $response = substr($response, 0, $this->max_response_length). '...';
+                    $response = trim($response);
+                    if ($response !== '') {
+                        if ($this->max_response_length && strlen($response) > $this->max_response_length) {
+                            $response = substr($response, 0, $this->max_response_length). '...';
+                        }
+                        $responses[] = $response;
                     }
-                    $responses[] = $response;
                 }
             }
         }

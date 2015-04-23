@@ -196,12 +196,20 @@ class Bot
 
     protected function generateHelp()
     {
+        $showAsterisk = false;
         $help = "Responders:\n";
         foreach ($this->map as $regex => $class_name) {
             $title = $class_name;
             $title = str_replace('Responder', '', $title);
             $title = str_replace(__NAMESPACE__ . '\\', '', $title);
+            if (is_array($class_name::$help)) {
+                $title .= "＊";
+                $showAsterisk = true;
+            }
             $help .= "{$title} - {$regex}\n";
+        }
+        if ($showAsterisk) {
+            $help .= "\n＊Detailed help available - help [responder]\n";
         }
         $help .= "\nUser settings:\n";
         $help .= "Set - set [setting] [value]\n";

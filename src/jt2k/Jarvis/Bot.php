@@ -187,6 +187,10 @@ class Bot
     public function respond($communication)
     {
         $result = $this->generateResponse($communication);
+
+        // disconnect from db to prevent long-running connections that might timeout
+        $this->disconnectDb();
+
         return $result;
     }
 

@@ -83,9 +83,6 @@ class SlackRTMBot extends Bot
                         $logger->notice("Sending message:\n" . print_r($responseEvent, true));
                         $client->send(json_encode($responseEvent));
                     }
-
-                    // disconnect from db to prevent long-running connections that might timeout
-                    $this->disconnectDb();
                 }
             });
 

@@ -49,6 +49,11 @@ class Bot
         }
     }
 
+    protected function disconnectDb()
+    {
+        $this->db = null;
+    }
+
     protected function enabledAdapter($adapter)
     {
         return ($this->config['enabled_adapters'] == 'all' ||

@@ -88,4 +88,7 @@ while (1) {
     if ($response) {
         echo "{$response}\n";
     }
+
+    // disconnect from db to prevent long-running connections that might timeout
+    $bot->disconnectDb();
 }

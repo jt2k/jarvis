@@ -140,6 +140,9 @@ class IRCBot extends Bot
                                 usleep(800000);
                             }
                         }
+
+                        // disconnect from db to prevent long-running connections that might timeout
+                        $this->disconnectDb();
                     }
                     return;
                     break;

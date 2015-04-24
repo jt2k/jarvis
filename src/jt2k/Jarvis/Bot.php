@@ -35,7 +35,7 @@ class Bot
     {
         if (is_object($this->db)) {
             return $this->db;
-        } elseif (is_array($this->config['database'])) {
+        } elseif (isset($this->config['database']) && is_array($this->config['database'])) {
             switch ($this->config['database']['engine']) {
                 case 'mysql':
                     $dsn = DB::dsnMySQL($this->config['database']['host'], $this->config['database']['schema']);
@@ -334,7 +334,7 @@ class Bot
 
             foreach ($this->map as $regex => $class_name) {
                 if (preg_match("/{$regex}/i", $command, $matches)) {
-                    $responder = new $class_name($config, $communication, $matches);
+                    $responder = new $class_name($config, $communication, $matches, $this->getDb());
                     $response = $responder->respond();
                     $response = trim($response);
                     if ($response !== '') {

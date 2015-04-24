@@ -2,12 +2,14 @@
 namespace jt2k\Jarvis;
 
 use jt2k\RestApi\RestApi;
+use jt2k\DB\DB;
 
 abstract class Responder
 {
     protected $config = array();
     protected $communication = array();
     protected $matches = array();
+    private $db;
 
     public static $pattern;
     public static $help;
@@ -15,11 +17,25 @@ abstract class Responder
 
     abstract public function respond();
 
-    public function __construct(array $config, array $communication, array $matches)
+    public function __construct(array $config, array $communication, array $matches, DB $db = null)
     {
         $this->config = $config;
         $this->communication = $communication;
         $this->matches = $matches;
+        $this->db = $db;
+    }
+
+    public function getName()
+    {
+        $name = get_class($this);
+        $name = preg_replace('/^.*\\\\/', '', $name);
+        $name = preg_replace('/Responder$/', '', $name);
+        return $name;
+    }
+
+    public function hasStorage()
+    {
+        return $this->db instanceof DB;
     }
 
     protected function requireConfig(array $parameters)
@@ -70,7 +86,7 @@ abstract class Responder
 
         $regex = $class::$pattern;
         if (preg_match("/{$regex}/i", $command, $matches)) {
-            $responder = new $class($this->config, array(), $matches);
+            $responder = new $class($this->config, array(), $matches, $this->db);
             return $responder->respond();
         }
 
@@ -92,5 +108,19 @@ abstract class Responder
     protected function requestRaw($url, $cache_ttl = false, $cache_ext = '')
     {
         return $this->request($url, $cache_ttl, $cache_ext, 'text');
+    }
+
+    protected function getStorage($key)
+    {
+        return $this->db->getValue("SELECT value FROM storage WHERE responder = ? and `key` = ?", array($this->getName(), $key));
+    }
+
+    protected function setStorage($key, $value)
+    {
+        return $this->db->replace('storage', array(
+            'responder' => $this->getName(),
+            'key' => $key,
+            'value' => $value
+        ));
     }
 }

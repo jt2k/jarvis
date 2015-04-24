@@ -224,6 +224,18 @@ class LevelUpResponder extends Responder
             }
             $r .= "$adj *$item*\n";
         }
+
+        if ($this->hasStorage()) {
+            $level = (int)$this->getStorage($hero);
+            if ($direction === 'UP') {
+                $level++;
+            } elseif ($direction === 'DOWN') {
+                $level--;
+            }
+            $level = max(0, $level);
+            $this->setStorage($hero, $level);
+            $r .= "{$hero} is now at level {$level}";
+        }
         return trim($r);
     }
 }

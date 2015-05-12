@@ -270,10 +270,15 @@ class Bot
 
     protected function generateResponse($communication)
     {
+        $direct_address = false;
         $command = trim($communication['text']);
         if (isset($this->config['name']) && $this->config['name']) {
             $name = preg_quote($this->config['name']);
-            $command = trim(preg_replace("/^{$name}[:,\-]*/i", '', $command));
+            $regex = "/^@?{$name}[:,\-]*/i";
+            if (preg_match($regex, $command)) {
+                $command = trim(preg_replace($regex, '', $command));
+                $direct_address = true;
+            }
         }
 
         $responses = array();
@@ -334,6 +339,9 @@ class Bot
 
             foreach ($this->map as $regex => $class_name) {
                 if (preg_match("/{$regex}/i", $command, $matches)) {
+                    if ($class_name::$require_direct_address && !$direct_address) {
+                        continue;
+                    }
                     $responder = new $class_name($config, $communication, $matches, $this->getDb());
                     $response = $responder->respond();
                     $response = trim($response);

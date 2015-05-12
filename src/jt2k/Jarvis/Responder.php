@@ -14,6 +14,7 @@ abstract class Responder
     public static $pattern;
     public static $help;
     public static $help_words;
+    public static $require_direct_address = false;
 
     abstract public function respond();
 

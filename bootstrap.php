@@ -5,7 +5,10 @@ if (file_exists(__DIR__ . '/vendor/autoload.php')) {
 
 $jarvis_config = array();
 $jarvis_config['responders_directory'] = __DIR__ . '/responders';
+$jarvis_config['enabled_adapters'] = 'all';
 $jarvis_config['name'] = 'jarvis';
+$jarvis_config['enable_help'] = true;
+$jarvis_config['enable_status'] = true;
 
 if (file_exists(__DIR__ . '/config.php')) {
     require 'config.php';

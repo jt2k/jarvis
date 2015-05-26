@@ -358,7 +358,7 @@ class Bot
         if (count($responses) > 0) {
             return join("\n", $responses);
         } else {
-            return false;
+            return '';
         }
     }
 }

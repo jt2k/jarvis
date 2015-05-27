@@ -1,38 +1,14 @@
 <?php
 use jt2k\Jarvis\Responder;
 
-class ResponderTest extends PHPUnit_Framework_TestCase
+class ResponderTest extends AbstractResponderTest
 {
     protected static $name = 'TestResponder';
-    protected static $command = 'confirm';
-    protected $responder;
 
     protected function setUp()
     {
-        if (static::$name == 'TestResponder') {
-            require_once 'TestResponder.php';
-        }
-        $this->responder = $this->initResponder(static::$command);
-    }
-
-    protected function initResponder($text)
-    {
-        $communication = array(
-            'user_name' => 'phpunit',
-            'text' => $text,
-            'bot_type' => 'cli'
-        );
-        $class = 'jt2k\\Jarvis\\' . static::$name;
-        $regex = $class::$pattern;
-        if (preg_match("/{$regex}/i", $text, $matches)) {
-            return new $class(
-                $GLOBALS['jarvis_config'],
-                $communication,
-                $matches
-            );
-        } else {
-            $this->fail('Initialized responder did not match command');
-        }
+        require_once 'TestResponder.php';
+        $this->responder = $this->initResponder('confirm');
     }
 
     public function testRespond()

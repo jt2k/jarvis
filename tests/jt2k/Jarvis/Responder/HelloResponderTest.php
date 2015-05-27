@@ -1,22 +1,12 @@
 <?php
-class HelloResponderTest extends ResponderTest
+class HelloResponderTest extends AbstractResponderTest
 {
     protected static $name = 'HelloResponder';
     protected static $command = 'hello';
 
     public function testRespond()
     {
-        $response = $this->responder->respond();
-        $this->assertRegExp('/(Hi|Hello|Hey)/', $response);
-    }
-
-    public function testGetName()
-    {
-        $this->assertEquals('Hello', $this->responder->getName());
-    }
-
-    public function testHasStorage()
-    {
-        $this->assertFalse($this->responder->hasStorage());
+        $responder = $this->initResponder('hello');
+        $this->assertRegExp('/(Hi|Hello|Hey)/', $responder->respond());
     }
 }

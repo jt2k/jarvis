@@ -3,7 +3,7 @@ namespace jt2k\Jarvis;
 
 class SPCResponder extends Responder
 {
-    public static $pattern = '^(tornado|hail|wind|fire)';
+    public static $pattern = '^(tornado|hail|wind|fire)$';
     protected $endpoint = 'http://www.spc.noaa.gov/products';
 
     public function respond()

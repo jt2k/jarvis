@@ -10,7 +10,7 @@ class LevelUpResponder extends Responder
      * lvlup foo
      * foo++
      */
-    public static $pattern = '((level|lvl)\s*(up|(down|dn))\s*(.+))|((.+)\s*(\+\+|\-\-))';
+    public static $pattern = '(^(level|lvl)\s*(up|(down|dn))\s*(.+))|((.+)\s*(\+\+|\-\-)$)';
     
     const TRAIT_MIN = 2;
     const TRAIT_MAX = 4;

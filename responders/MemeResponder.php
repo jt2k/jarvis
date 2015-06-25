@@ -6,13 +6,13 @@ class MemeResponder extends Responder
     public static $pattern = '.*';
 
     protected static $patterns = array(
-        'fry.png' => '(not sure if .*) (or .*)',
-        'ned_stark.jpg' => '(brace (?:yourself|yourselves)[ ,]*)(.*)',
-        'most_interesting.jpg' => '(i don\'t always .*)(but when i do.*)',
-        'boromir.jpg' => '(one does not simply) (.*)',
-        'y_u_no.jpg' => '(.*)(y u no .*)',
-        'all_the_things.jpg' => '(.*) (all the .*)',
-        'xzibit.jpg' => '(.*i heard you .*) (so i .*)'
+        'CsNF8w' => '(not sure if .*) (or .*)',
+        '_I74XA' => '(brace (?:yourself|yourselves)[ ,]*)(.*)',
+        'V8QnRQ' => '(i don\'t always .*)(but when i do.*)',
+        'da2i4A' => '(one does not simply) (.*)',
+        'NryNmg' => '(.*)(y u no .*)',
+        'Dv99KQ' => '(.*) (all the [\w!\.]+)$',
+        'Yqk_kg' => '(.*i heard you .*) (so i .*)'
     );
 
     public static $help = array(
@@ -26,23 +26,89 @@ class MemeResponder extends Responder
         '  (.*i heard you .*) (so i .*)'
     );
 
+    protected function curlLocationAndResponseCode($url, $options = array(), $post = null)
+    {
+        $options += array(
+            CURLOPT_URL => $url,
+            CURLOPT_RETURNTRANSFER => true,
+            CURLOPT_CONNECTTIMEOUT => 4,
+            CURLOPT_TIMEOUT => 8,
+            CURLOPT_HEADER => true,
+            CURLOPT_FOLLOWLOCATION => false
+        );
+        $ch = curl_init();
+        curl_setopt_array($ch, $options);
+        if ($post) {
+            curl_setopt($ch, CURLOPT_POST, true);
+            curl_setopt($ch, CURLOPT_POSTFIELDS, $post); 
+        }
+        $response = curl_exec($ch);
+        $responseCode = curl_getinfo($ch, CURLINFO_HTTP_CODE);
+        curl_close($ch);
+        if (preg_match('/^Location:(.*)$/mi', $response, $m)) {
+            $location = trim($m[1]);
+        } else {
+            $location = false;
+        }
+        return array($responseCode, $location);
+    }
+
     public function respond()
     {
         foreach (self::$patterns as $image => $regex) {
             if (preg_match("/{$regex}/i", $this->matches[0], $m)) {
-                $params = array(
-                    'u' => "http://v1.memecaptain.com/{$image}",
-                );
+                $url = 'http://memecaptain.com/gend_images';
+                $topText = $bottomText = '';
                 if (!empty($m[1])) {
-                    $params['t1'] = $m[1];
+                    $topText = $m[1];
                 }
                 if (!empty($m[2])) {
-                    $params['t2'] = $m[2];
+                    $bottomText = $m[2];
                 }
-                $url = 'http://v1.memecaptain.com/g?' . http_build_query($params);
-                $response = $this->request($url);
-                if (is_object($response) && !empty($response->imageUrl)) {
-                    return $response->imageUrl;
+
+                $post = [
+                    'src_image_id' => $image,
+                    'private' => true,
+                    'captions_attributes' => [
+                        [
+                            'text' => $topText,
+                            'top_left_x_pct' => 0.05,
+                            'top_left_y_pct' => 0,
+                            'width_pct' => 0.9,
+                            'height_pct' => 0.25
+                        ],
+                        [
+                            'text' => $bottomText,
+                            'top_left_x_pct' => 0.05,
+                            'top_left_y_pct' => 0.75,
+                            'width_pct' => 0.9,
+                            'height_pct' => 0.25
+                        ]
+                    ]
+                ];
+
+                $options = [
+                    CURLOPT_HTTPHEADER => [
+                        'Accept: application/json',
+                        'Content-Type: application/json'
+                    ]
+                ];
+                $image = false;
+                list($code, $pendingLocation) = $this->curlLocationAndResponseCode($url, $options, json_encode($post));
+                if ($pendingLocation) {
+                    $counter = 0;
+                    do {
+                        list($code, $imageLocation) = $this->curlLocationAndResponseCode($pendingLocation);
+                        if ($code == 303) {
+                            $image = $imageLocation;
+                            break;
+                        }
+                        sleep(1);
+                    } while (++$counter < 5);
+                }
+
+                if ($image) {
+                    return $image;
                 } else {
                     return 'Failed to generate image. Use your imagination.';
                 }

@@ -3,7 +3,7 @@ namespace jt2k\Jarvis;
 
 class xkcdResponder extends Responder
 {
-    public static $pattern = '^xkcd( random)?( [\d]+)?';
+    public static $pattern = '^xkcd( random)?( [\d]+)?$';
 
     public function respond()
     {

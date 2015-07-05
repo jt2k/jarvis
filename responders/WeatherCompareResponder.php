@@ -3,7 +3,7 @@ namespace jt2k\Jarvis;
 
 class WeatherCompareResponder extends Responder
 {
-    public static $pattern = '^compare (.+) and (.+) weather';
+    public static $pattern = '^compare (.+) and (.+) weather$';
     protected $weatherA;
     protected $weatherB;
     protected $locationA;

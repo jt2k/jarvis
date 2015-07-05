@@ -6,6 +6,7 @@ use jt2k\RestApi\WolframAlpha;
 class WolframAlphaResponder extends Responder
 {
     public static $pattern = '^(?:(?:wa|wolfram|wolfram alpha) (.+)|(?:how|when|where|what|who|which) .+\?)$';
+    public static $require_direct_address = true;
 
     public function respond()
     {

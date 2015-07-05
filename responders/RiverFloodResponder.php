@@ -3,7 +3,7 @@ namespace jt2k\Jarvis;
 
 class RiverFloodResponder extends Responder
 {
-    public static $pattern = '(?:river|flood)(\s+([a-z0-9]+))?';
+    public static $pattern = '^(?:river|flood)(\s+([a-z0-9]+))?$';
 
     public function respond()
     {

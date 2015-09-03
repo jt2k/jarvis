@@ -121,8 +121,10 @@ class WeatherResponder extends Responder
     protected function generateCurrent()
     {
         $temp = round($this->data->currently->temperature);
+        $humidity = round($this->data->currently->humidity * 100);
+        $precip = round($this->data->currently->precipProbability * 100);
 
-        return "{$temp}°F, {$this->data->currently->summary}";
+        return "{$temp}°F, {$this->data->currently->summary}\n{$humidity}% humidity, {$precip}% chance of precipitation";
     }
 
     public function respond()

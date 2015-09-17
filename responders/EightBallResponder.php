@@ -26,4 +26,21 @@ class EightBallResponder extends RandomResponder
         'Outlook not so good',
         'Very doubtful'
     );
+    
+    public static function isPositive($response) {
+        switch ($response) {
+            case 'It is certain':
+            case 'It is decidedly so':
+            case 'Without a doubt':
+            case 'Yes definitely':
+            case 'You may rely on it':
+            case 'As I see it, yes':
+            case 'Most likely':
+            case 'Outlook good':
+            case 'Yes':
+            case 'Signs point to yes':
+                return true;
+            default: return false;
+        }
+    }
 }

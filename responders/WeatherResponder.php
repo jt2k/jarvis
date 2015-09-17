@@ -12,6 +12,7 @@ class WeatherResponder extends Responder
         'weather - returns current temperature and conditions',
         'temperature - returns current temperature and conditions',
         'rain|snow|precipitation - returns the probabilty of precipitation for the next 24 hours',
+        'weather brief - returns one line with only temperature and condition',
         'weather foreacst - returns weather foreacst for the next hour, today, and tomorrow',
         'weather foreacst [n] - returns weather forecast for the next n days',
         'weather hourly - returns hourly temperature forecast',
@@ -135,6 +136,7 @@ class WeatherResponder extends Responder
 
         $apikey = $this->config['forecast.io_key'];
         $location = join(',', $this->config['location']);
+        $isBrief = false;
 
         $url = "https://api.forecast.io/forecast/{$apikey}/{$location}";
         $this->data = $this->request($url, 600, 'weather'); // cache for 10 minutes
@@ -148,6 +150,10 @@ class WeatherResponder extends Responder
         } elseif (!empty($this->matches[2])) {
             if (preg_match('/hourly/i', $this->matches[2])) {
                 $result = $this->generateHourly();
+            } elseif(preg_match('/brief/i', $this->matches[2])) {
+                $temp = round($this->data->currently->temperature);
+                $result = "{$temp}°F, {$this->data->currently->summary}";
+                $isBrief = true;
             } else {
                 $result = $this->generateForecast();
             }
@@ -155,7 +161,7 @@ class WeatherResponder extends Responder
             $result = $this->generateCurrent();
         }
 
-        if (($geocode = $this->callResponder('Geocode', "geocode {$location}")) && $geocode != 'Not found') {
+        if (!$isBrief && ($geocode = $this->callResponder('Geocode', "geocode {$location}")) && $geocode != 'Not found') {
             $result = "Location: {$geocode}\n{$result}";
         }
 

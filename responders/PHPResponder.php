@@ -18,9 +18,9 @@ class PHPResponder extends Responder
     public function respond($redirect = false)
     {
         if ($redirect) {
-            $url = 'http://us2.php.net' . $redirect;
+            $url = 'http://php.net' . $redirect;
         } else {
-            $url = 'http://us2.php.net/' . urlencode($this->matches[1]);
+            $url = 'http://php.net/' . urlencode($this->matches[1]);
         }
         $html = $this->request($url, 3600, 'phpnet', 'html');
         if (preg_match('/<h2 class="title">Class synopsis<\/h2>/', $html)) {
@@ -36,9 +36,9 @@ class PHPResponder extends Responder
                 return $result;
             }
         } elseif (preg_match('/<div class="(?:method|constructor)synopsis dc-description">(.*?)<\/div>/s', $html, $m)) {
-            return self::cleanString($m[1]);
+            return self::cleanString($m[1]) . "\n{$url}";
         } elseif (preg_match('/<p class="refpurpose">(.*?)<\/p>/s', $html, $m)) {
-            return self::cleanString($m[1]);
+            return self::cleanString($m[1]) . "\n{$url}";
         } elseif (!$redirect && preg_match('/<ul id="quickref_functions">.*?href="([^"]+)"/s', $html, $m)) {
             return $this->respond($m[1]);
         }

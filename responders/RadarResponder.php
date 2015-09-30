@@ -27,6 +27,6 @@ class RadarResponder extends Responder
         );
         $url .= http_build_query($params);
 
-        return $this->requestProxy($url, 300, 'radar', 'gif');
+        return $this->requestProxy($url, 300, 'radar', 'gif') . '?' . time();
     }
 }

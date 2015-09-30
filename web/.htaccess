@@ -1,0 +1,2 @@
+RewriteEngine On
+RewriteRule proxy/([a-z0-9]+)/([a-f0-9]+)\.(gif|png|jpg)$ proxy.php?type=$1&hash=$2&ext=$3

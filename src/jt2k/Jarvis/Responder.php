@@ -74,6 +74,16 @@ abstract class Responder
         return $enabled;
     }
 
+    protected function proxyEnabled()
+    {
+        return (
+            $this->cacheEnabled() &&
+            ($this->config['enabled_adapters'] == 'all' ||
+                in_array('proxy', $this->config['enabled_adapters'])) &&
+            !empty($this->config['web_url'])
+        );
+    }
+
     protected function callResponder($name, $command)
     {
         if (!preg_match('/.+Responder$/', $name)) {
@@ -109,6 +119,24 @@ abstract class Responder
     protected function requestRaw($url, $cache_ttl = false, $cache_ext = '')
     {
         return $this->request($url, $cache_ttl, $cache_ext, 'text');
+    }
+
+    protected function requestProxy($url, $cache_ttl, $cache_ext, $file_type)
+    {
+        if (!$this->proxyEnabled()) {
+            return false;
+        }
+        $this->requestRaw($url, $cache_ttl, $cache_ext . '.proxy');
+        $restapi = new RestApi();
+        $restapi->setCache(-1, '', '');
+        $cacheHash = ltrim($restapi->getCacheFile($url, false), '/');
+
+        return "{$this->config['web_url']}proxy/{$cache_ext}/{$cacheHash}.{$file_type}";
+    }
+
+    protected function getProxyUrl($url, $type)
+    {
+        $hash = $this->requestCacheHash($url);
     }
 
     protected function getStorage($key)

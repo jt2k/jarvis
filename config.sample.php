@@ -2,6 +2,12 @@
 // Set in bootstrap.php, defaults to /responders
 // $jarvis_config['responders_directory'] = __DIR__ . '/responders';
 
+// Or, specify an array of directories:
+// $jarvis_config['responders_directory'] = array(
+//     __DIR__ . '/responders',
+//     '/home/jarvisresponders'
+// );
+
 $jarvis_config['enabled_responders'] = 'all';
 // or, array of responders:
 // $jarvis_config['enabled_responders'] = array('Hello', 'Weather');
@@ -19,6 +25,14 @@ $jarvis_config['cache_directory'] = __DIR__ . '/cache';
 $jarvis_config['enable_help'] = true;
 $jarvis_config['location'] = array(LATITUDE, LONGITUDE);
 
+// Configure persistent storage
+$jarvis_config['database'] = array(
+    'engine' => 'mysql',
+    'host' => '',
+    'schema' => '',
+    'user' => '',
+    'password' => ''
+);
 /*
  * Configuration for adapters
  */
@@ -44,6 +58,8 @@ if ($jarvis_config['enabled_adapters'] == 'all' || in_array('irc', $jarvis_confi
  * Configuration for responders
  */
 $jarvis_config['forecast.io_key'] = 'FORECAST.IO_KEY';
+$jarvis_config['wunderground_key'] = 'WUNDERGROUND_KEY';
+$jarvis_config['bingmaps_key'] = 'BINGMAPS_KEY';
 
 $jarvis_config['twitter_consumer_key'] = 'TWITTER_CONSUMER_KEY';
 $jarvis_config['twitter_consumer_secret'] = 'TWITTER_CONSUMER_SECRET';

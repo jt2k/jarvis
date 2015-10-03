@@ -3,7 +3,7 @@ namespace jt2k\Jarvis;
 
 class PiwikResponder extends Responder
 {
-    public static $pattern = '^piwik (\w+)$';
+    public static $pattern = '^piwik (\w+)(?: (visits|page ?views))?$';
 
     public function respond()
     {
@@ -23,9 +23,26 @@ class PiwikResponder extends Responder
 
         $siteId = urlencode($config['sites'][$site]);
 
-        $url = "{$config['url']}?module=API&method=VisitsSummary.getVisits&idSite={$siteId}&date=last8&period=day&format=json&token_auth={$config['token']}";
+        $method = 'getVisits';
+        $unit = 'visits';
+        if (!empty($this->matches[2])) {
+            switch (strtolower($this->matches[2])) {
+                case 'pageviews':
+                case 'page views':
+                    $method = 'getActions';
+                    $unit = 'page views';
+                    break;
+                case 'visits':
+                    $method = 'getVisits';
+                    $unit = 'visits';
+                    break;
+                default:
+                    return "Metric not supported";
+            }
+        }
+        $url = "{$config['url']}?module=API&method=VisitsSummary.{$method}&idSite={$siteId}&date=last8&period=day&format=json&token_auth={$config['token']}";
 
-        $stats = (array)$this->request($url);
+        $stats = (array)$this->request($url, 1800, 'piwik');
         if (isset($stats['result']) && $stats['result'] == 'error') {
             return 'API error. Make sure site is configured correctly and token user has access.';
         }
@@ -33,8 +50,9 @@ class PiwikResponder extends Responder
         $week = array_sum($stats);
         $yesterday = end($stats);
         return sprintf(
-            "%s visits\nToday (so far): %s\nYesterday: %s\nLast week: %s",
+            "%s %s\nToday (so far): %s\nYesterday: %s\nLast week: %s",
             $site,
+            $unit,
             number_format($today),
             number_format($yesterday),
             number_format($week)

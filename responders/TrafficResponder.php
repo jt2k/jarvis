@@ -16,6 +16,7 @@ class TrafficResponder extends Responder
             . '/12?mapSize=600,400&mapLayer=TrafficFlow&format=png'
             . "&key={$this->config['bingmaps_key']}";
 
-        return $this->requestProxy($url, 300, 'traffic', 'png') . '?' . time();
+        $image = $this->requestProxy($url, 300, 'traffic', 'png');
+        return "Traffic conditions at " . date('g:ia') . ":\n{$image}";
     }
 }

@@ -53,7 +53,7 @@ abstract class Responder
     protected function cleanupCache()
     {
         foreach (glob($this->config['cache_directory'] . '/*') as $file) {
-            if (filemtime($file) < time() - 3600*24) {
+            if (filemtime($file) < time() - 3600*24*7) {
                 @unlink($file);
             }
         }
@@ -126,12 +126,20 @@ abstract class Responder
         if (!$this->proxyEnabled()) {
             return false;
         }
+        if ($cache_ttl > 0) {
+            $ts = floor(time() / $cache_ttl) * $cache_ttl;
+            if (strpos($url, '?') === false) {
+                $url .= "?{$ts}";
+            } else {
+                $url .= "&{$ts}";
+            }
+        }
         $this->requestRaw($url, $cache_ttl, $cache_ext . '.proxy');
         $restapi = new RestApi();
         $restapi->setCache(-1, '', '');
         $cacheHash = ltrim($restapi->getCacheFile($url, false), '/');
 
-        return "{$this->config['web_url']}proxy/{$cache_ext}/{$cacheHash}.{$file_type}";
+        return "{$this->config['web_url']}proxy/{$cache_ext}/{$cacheHash}.{$file_type}?{$ts}";
     }
 
     protected function getProxyUrl($url, $type)

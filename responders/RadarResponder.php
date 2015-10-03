@@ -26,7 +26,7 @@ class RadarResponder extends Responder
             'delay' => 30
         );
         $url .= http_build_query($params);
-
-        return $this->requestProxy($url, 300, 'radar', 'gif') . '?' . time();
+        $image = $this->requestProxy($url, 300, 'radar', 'gif');
+        return "Radar at " . date('g:ia') . ":\n{$image}";
     }
 }

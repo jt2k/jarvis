@@ -12,7 +12,8 @@ class MemeResponder extends Responder
         'da2i4A' => '(one does not simply) (.*)',
         'NryNmg' => '(.*)(y u no .*)',
         'Dv99KQ' => '(.*) (all the [\w!\.]+)$',
-        'Yqk_kg' => '(.*i heard you .*) (so i .*)'
+        'Yqk_kg' => '(.*i heard you .*) (so i .*)',
+        'iGv3ug' => '(.*) (but (?:not this day|today is not that day|not today|it is not this day|it is not today))'
     );
 
     public static $help = array(

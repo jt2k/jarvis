@@ -21,7 +21,7 @@ class APODResponder extends Responder
         if (!empty($obj->title)) {
             $text .= $obj->title . "\n";
         }
-        if (preg_match('/youtube.com\/embed\/(\w+)/', $obj->url, $m)) {
+        if (preg_match('/youtube.com\/embed\/([\w\-]+)/', $obj->url, $m)) {
             $url = "https://www.youtube.com/watch?v={$m[1]}";
         } else {
             $url = $obj->url;

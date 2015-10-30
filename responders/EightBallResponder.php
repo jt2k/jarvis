@@ -29,6 +29,6 @@ class EightBallResponder extends RandomResponder
 
     public function respond()
     {
-        return ':eightball: ' . parent::respond();
+        return ':8ball: ' . parent::respond();
     }
 }

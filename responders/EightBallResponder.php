@@ -3,7 +3,7 @@ namespace jt2k\Jarvis;
 
 class EightBallResponder extends RandomResponder
 {
-    public static $pattern = '(?:8|eight|magic) ?ball';
+    public static $pattern = '^(?:8|eight|magic) ?ball';
     protected static $options = array(
         'It is certain',
         'It is decidedly so',

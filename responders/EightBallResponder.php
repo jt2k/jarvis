@@ -26,4 +26,9 @@ class EightBallResponder extends RandomResponder
         'Outlook not so good',
         'Very doubtful'
     );
+
+    public function respond()
+    {
+        return ':eightball: ' . parent::respond();
+    }
 }

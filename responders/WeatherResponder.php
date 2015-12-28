@@ -7,7 +7,7 @@ namespace jt2k\Jarvis;
  */
 class WeatherResponder extends Responder
 {
-    public static $pattern = '^(weather|temperature|rain|snow|precipitation)( hourly( \d+)?| forecast( \d+)?)?';
+    public static $pattern = '^(weather|temperature|rain|snow|precipitation)( hourly( \d{1,2}\b)?| forecast( \d{1,2}\b)?)?(?: (.+,.+|[0-9]{5}))?';
     public static $help = array(
         'weather - returns current temperature and conditions',
         'temperature - returns current temperature and conditions',
@@ -16,6 +16,8 @@ class WeatherResponder extends Responder
         'weather foreacst [n] - returns weather forecast for the next n days',
         'weather hourly - returns hourly temperature forecast',
         'weather hourly [n] - returns hourly temperature forecast for the next n hours',
+        'weather [options] city, state - returns weather for specified city',
+        'weather [options] ZIP code - returns weather for specified ZIP code'
     );
     public static $help_words = array('temperature', 'rain', 'snow', 'precipitation');
 
@@ -134,7 +136,16 @@ class WeatherResponder extends Responder
         }
 
         $apikey = $this->config['forecast.io_key'];
-        $location = join(',', $this->config['location']);
+
+        if (!empty($this->matches[5])) {
+            $location = $this->callResponder('Geocode', "geocode {$this->matches[5]}");
+            if ($location == 'Not found') {
+                return "Could not locate \"{$this->matches[5]}\"";
+            }
+            $location = str_replace(' ', '', $location);
+        } else {
+            $location = join(',', $this->config['location']);
+        }
 
         $url = "https://api.forecast.io/forecast/{$apikey}/{$location}";
         $this->data = $this->request($url, 600, 'weather'); // cache for 10 minutes

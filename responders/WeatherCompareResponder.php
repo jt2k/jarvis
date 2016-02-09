@@ -53,15 +53,21 @@ class WeatherCompareResponder extends Responder
 
         $xTicks = array();
 
-        $start = 1;
-        $end = 25;
-        if ((int)date('i') < 30) {
-            $start = 0;
-            $end = 24;
+        $start = 0;
+        $end = 24;
+        // If more than halfway through the current hour, start with next hour
+        if ((int)date('i') > 30) {
+            $start = 1;
+            $end = 25;
         }
         for ($i = $start; $i <= $end; $i+=8) {
-            // Use location A for x-axis labels
-            $xTicks[] = $this->formatTime('ga', $this->weatherA->hourly->data[$i]->time);
+            if ($i <= 1) {
+                $xTicks[] = 'now';
+            }
+            else {
+                // Use location A for x-axis labels
+                $xTicks[] = $this->formatTime('ga', $this->weatherA->hourly->data[$i]->time);
+            }
         }
         for ($i = $start; $i <= $end; $i++) {
             $hourlyA[] = round($this->weatherA->hourly->data[$i]->temperature);

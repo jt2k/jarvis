@@ -35,7 +35,7 @@ class DictionaryResponder extends Responder
 
     protected function parseEntry($entry, $single = false)
     {
-        if ((string) $entry->ew != $this->word) {
+        if (strcasecmp((string)$entry->ew, $this->word) !== 0) {
             return false;
         }
         $part_of_speech = (string) $entry->fl;

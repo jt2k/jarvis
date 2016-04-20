@@ -56,7 +56,11 @@ class MemeResponder extends Responder
 
     public function respond()
     {
-        foreach (self::$patterns as $image => $regex) {
+        $patterns = self::$patterns;
+        if (isset($this->config['meme_patterns']) && is_array($this->config['meme_patterns'])) {
+            $patterns = array_merge($patterns, $this->config['meme_patterns']);
+        }
+        foreach ($patterns as $image => $regex) {
             if (preg_match("/{$regex}/i", $this->matches[0], $m)) {
                 $url = 'http://memecaptain.com/gend_images';
                 $topText = $bottomText = '';
@@ -105,7 +109,7 @@ class MemeResponder extends Responder
                             break;
                         }
                         sleep(1);
-                    } while (++$counter < 5);
+                    } while (++$counter < 10);
                 }
 
                 if ($image) {

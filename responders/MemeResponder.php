@@ -56,9 +56,10 @@ class MemeResponder extends Responder
 
     public function respond()
     {
+        $config = isset($this->config['meme_captain']) ? $this->config['meme_captain'] : [];
         $patterns = self::$patterns;
-        if (isset($this->config['meme_patterns']) && is_array($this->config['meme_patterns'])) {
-            $patterns = array_merge($patterns, $this->config['meme_patterns']);
+        if (isset($config['custom']) && is_array($config['custom'])) {
+            $patterns = array_merge($patterns, $config['custom']);
         }
         foreach ($patterns as $image => $regex) {
             if (preg_match("/{$regex}/i", $this->matches[0], $m)) {
@@ -92,11 +93,15 @@ class MemeResponder extends Responder
                     ]
                 ];
 
+                $headers = [
+                    'Accept: application/json',
+                    'Content-Type: application/json'
+                ];
+                if (isset($config['token'])) {
+                    $headers[] = "Authorization: Token token=\"{$config['token']}\"";
+                }
                 $options = [
-                    CURLOPT_HTTPHEADER => [
-                        'Accept: application/json',
-                        'Content-Type: application/json'
-                    ]
+                    CURLOPT_HTTPHEADER => $headers
                 ];
                 $image = false;
                 list($code, $pendingLocation) = $this->curlLocationAndResponseCode($url, $options, json_encode($post));

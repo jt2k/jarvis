@@ -160,4 +160,26 @@ abstract class Responder
             'value' => $value
         ));
     }
+
+    protected function getStorageSet($prefix)
+    {
+        $rows = $this->db->getRows("SELECT `key`, value FROM storage WHERE responder = ? and `key` like ?", array($this->getName(), "{$prefix}::%"));
+        $set = [];
+        foreach ($rows as $row) {
+            $key = preg_replace('/^' . preg_quote($prefix) . '::/', '', $row['key']);
+            $set[$key] = $row['value'];
+        }
+        return $set;
+    }
+
+    protected function setStorageSet($prefix, $values)
+    {
+        foreach ($values as $key => $value) {
+            $this->db->replace('storage', array(
+                'responder' => $this->getName(),
+                'key' => "{$prefix}::{$key}",
+                'value' => $value
+            ));
+        }
+    }
 }

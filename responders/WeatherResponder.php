@@ -2,7 +2,7 @@
 namespace jt2k\Jarvis;
 
 /**
- * Sign up for an API key here: https://developer.forecast.io/
+ * Sign up for an API key here: https://developer.darksky.net/
  * Then, add the key and coordinates in config.php (forecast.io_key and forecast.io_coords)
  */
 class WeatherResponder extends Responder
@@ -132,7 +132,7 @@ class WeatherResponder extends Responder
     public function respond()
     {
         if (!$this->requireConfig(array('forecast.io_key', 'location'))) {
-            return 'forecast.io_key and location are required.';
+            return 'forecast.io_key (darksky.net) and location are required.';
         }
 
         $apikey = $this->config['forecast.io_key'];
@@ -147,11 +147,11 @@ class WeatherResponder extends Responder
             $location = join(',', $this->config['location']);
         }
 
-        $url = "https://api.forecast.io/forecast/{$apikey}/{$location}";
+        $url = "https://api.darksky.net/forecast/{$apikey}/{$location}";
         $this->data = $this->request($url, 600, 'weather'); // cache for 10 minutes
 
         if (!is_object($this->data) || !is_object($this->data->currently)) {
-            return 'Sorry, I could not retrieve the weather from forecast.io.';
+            return 'Sorry, I could not retrieve the weather from darksky.net.';
         }
 
         if (in_array(strtolower($this->matches[1]), array('rain', 'snow', 'precipitation'))) {

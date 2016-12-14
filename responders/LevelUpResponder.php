@@ -128,7 +128,8 @@ class LevelUpResponder extends Responder
         'rusty',
         'shoddy',
         'spectral',
-        'uranium-enriched'
+        'uranium-enriched',
+        'vajazzled'
     );
     
     private static $treasure = array(

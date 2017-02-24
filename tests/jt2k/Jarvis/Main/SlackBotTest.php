@@ -7,6 +7,7 @@ class SlackBotTest extends PHPUnit_Framework_TestCase
 
     protected function setUp()
     {
+        $GLOBALS['jarvis_config']['slackbot_token'] = 'FOOBAR123';
         $this->bot = new SlackBot($GLOBALS['jarvis_config']);
     }
 
@@ -28,5 +29,14 @@ class SlackBotTest extends PHPUnit_Framework_TestCase
         $this->assertContains('Bot type: SlackBot', $response);
         $this->assertRegExp('/PID: \d+/', $response);
         $this->assertRegExp('/Memory usage: \d/', $response);
+    }
+
+    public function testMissingConfiguration()
+    {
+        $this->expectException(\Exception::class);
+        $this->expectExceptionMessage('slackbot_token must be configured');
+
+        $this->bot = new SlackBot([]);
+        $this->respond('status');
     }
 }

@@ -3,8 +3,7 @@ namespace jt2k\Jarvis;
 
 class HTTPResponder extends Responder
 {
-    public static $pattern = '^check (.+)$';
-
+    public static $pattern = '^check (https?:\/\/[\w\.\/:\-%]+|[\w\/:\-%]+\.[\w\.\/:\-%]+)$';
     public function respond()
     {
         $ch = curl_init($this->matches[1]);

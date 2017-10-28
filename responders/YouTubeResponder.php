@@ -7,14 +7,18 @@ class YouTubeResponder extends Responder
 
     public function respond()
     {
+        if (!$this->requireConfig(['youtube_key'])) {
+            return 'youtube_key required';
+        }
         $q = urlencode(trim($this->matches[1]));
-        $url = "https://gdata.youtube.com/feeds/api/videos?q={$q}&max-results=4&v=2&alt=json";
+        $key = urlencode($this->config['youtube_key']);
+        $url = "https://www.googleapis.com/youtube/v3/search?q={$q}&maxResults=4&part=snippet&type=video&key={$key}";
         $obj = $this->request($url);
-        if (!empty($obj->feed->entry)) {
-            $results = $obj->feed->entry;
+        if (!empty($obj->items)) {
+            $results = $obj->items;
             shuffle($results);
-            $id = $results[0]->{'media$group'}->{'yt$videoid'}->{'$t'};
-            $title = $results[0]->title->{'$t'};
+            $id = $results[0]->id->videoId;
+            $title = $results[0]->snippet->title;
             return "{$title} http://www.youtube.com/watch?v={$id}";
         }
     }

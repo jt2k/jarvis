@@ -3,7 +3,7 @@ namespace jt2k\Jarvis;
 
 class PHPResponder extends Responder
 {
-    public static $pattern = '^php (.+)$';
+    public static $pattern = '^php (\w+)$';
 
     protected static function cleanString($string)
     {

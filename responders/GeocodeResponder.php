@@ -14,8 +14,11 @@ class GeocodeResponder extends Responder
             $param = 'address';
         }
         $query = urlencode($query);
-        $url = "https://maps.googleapis.com/maps/api/geocode/json?{$param}={$query}&sensor=false";
-        $obj = $this->request($url, 3600*24, 'geocode');
+        $url = "https://maps.googleapis.com/maps/api/geocode/json?{$param}={$query}";
+        if (!empty($this->config['google_key'])) {
+            $url .= '&key=' . urlencode($this->config['google_key']);
+        }
+        $obj = $this->request($url, 3600*24*7, 'geocode');
         if (!is_object($obj) || $obj->status !== 'OK') {
             return 'Not found';
         }

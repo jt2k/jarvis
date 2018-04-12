@@ -3,7 +3,7 @@ namespace jt2k\Jarvis;
 
 class APODResponder extends Responder
 {
-    public static $pattern = '^(apod|astronomy photo)$';
+    public static $pattern = '^(apot?d|astronomy photo)$';
 
     public function respond()
     {

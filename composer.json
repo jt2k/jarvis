@@ -1,4 +1,8 @@
 {
+    "name": "jt2k/jarvis",
+    "license": "MIT",
+    "type": "project",
+    "description": "Jarvis is a multi-modal chat bot written in PHP",
     "require": {
         "swiftmailer/swiftmailer": "@stable",
         "simplepie/simplepie": "1.3.*",

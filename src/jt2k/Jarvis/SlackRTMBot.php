@@ -32,6 +32,7 @@ class SlackRTMBot extends Bot
     public function connect()
     {
         $restapi = new RestApi();
+        $restapi->setCacheLife(0);
         $result = $restapi->request('https://slack.com/api/rtm.start', array(
             'get' => array(
                 'token' => $this->oauth_token

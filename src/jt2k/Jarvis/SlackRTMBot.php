@@ -32,6 +32,7 @@ class SlackRTMBot extends Bot
     public function connect()
     {
         $restapi = new RestApi();
+        $restapi->setCacheLife(0);
         $result = $restapi->request('https://slack.com/api/rtm.start', array(
             'get' => array(
                 'token' => $this->oauth_token
@@ -80,6 +81,9 @@ class SlackRTMBot extends Bot
                             'channel' => $channel,
                             'text' => $response
                         );
+                        if (!empty($event->thread_ts)) {
+                            $responseEvent['thread_ts'] = $event->thread_ts;
+                        }
                         $logger->notice("Sending message:\n" . print_r($responseEvent, true));
                         $client->send(json_encode($responseEvent));
                     }

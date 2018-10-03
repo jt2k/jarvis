@@ -1,19 +1,22 @@
 <?php
 namespace jt2k\Jarvis;
 
-class PiwikResponder extends Responder
+class MatomoResponder extends Responder
 {
-    public static $pattern = '^piwik (\w+)(?: (visits|page ?views))?$';
+    public static $pattern = '^(?:matomo|piwik) (\w+)(?: (visits|page ?views))?$';
 
     public function respond()
     {
-        if (!$this->requireConfig(array('piwik'))) {
-            return 'piwik not configured';
+        if ($this->requireConfig(['matomo'])) {
+            $config = $this->config['matomo'];
+        } elseif ($this->requireConfig(['piwik'])) {
+            $config = $this->config['piwik'];
+        } else {
+            return 'matomo configuration is missing';
         }
 
-        $config = $this->config['piwik'];
         if (!isset($config['url']) || !isset($config['token']) || !is_array($config['sites'])) {
-            return 'piwik not configured';
+            return 'matomo configuration is missing url, token, or sites';
         }
 
         $site = strtolower($this->matches[1]);

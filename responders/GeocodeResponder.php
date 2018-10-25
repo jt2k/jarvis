@@ -8,31 +8,31 @@ class GeocodeResponder extends Responder
     public function respond()
     {
         $query = trim($this->matches[1]);
+        $reverse = false;
         if (preg_match('/^(-?[0-9\.]+)[ ,]+(-?[0-9\.]+)$/', $query, $m)) {
-            $param = 'latlng';
+            $reverse = true;
+            $lat = $m[1];
+            $lon = $m[2];
+            $url = "https://nominatim.openstreetmap.org/reverse?lat={$lat}&lon={$lon}";
         } else {
-            $param = 'address';
+            $url = 'https://nominatim.openstreetmap.org/search?q=' . urlencode($query);
         }
-        $query = urlencode($query);
-        $url = "https://maps.googleapis.com/maps/api/geocode/json?{$param}={$query}";
-        if (!empty($this->config['google_key'])) {
-            $url .= '&key=' . urlencode($this->config['google_key']);
-        }
+        $url .= '&format=json';
         $obj = $this->request($url, 3600*24*7, 'geocode');
-        if (!is_object($obj) || $obj->status !== 'OK') {
-            return 'Not found';
-        }
-        if (!is_array($obj->results) || !isset($obj->results[0])) {
-            return 'Not found';
-        }
-
-        if ($param == 'address') {
-            return "{$obj->results[0]->geometry->location->lat}, {$obj->results[0]->geometry->location->lng}";
+        if ($reverse) {
+            if (!is_object($obj) || !isset($obj->address)) {
+                return 'Not found';
+            }
+            $address = "{$obj->address->city}, {$obj->address->state} {$obj->address->postcode}";
+            if ($obj->address->country && $obj->address->country != 'USA') {
+                $address .= ", {$obj->address->country}";
+            }
+            return $address;
         } else {
-            $full_address = $obj->results[0]->formatted_address;
-            $full_address = preg_replace('/^[^,]+, /', '', $full_address);
-            $full_address = preg_replace('/, USA$/', '', $full_address);
-            return $full_address;
+            if (!is_array($obj) || count($obj) === 0 || !isset($obj[0]->lat) || !isset($obj[0]->lon)) {
+                return 'Not found';
+            }
+            return "{$obj[0]->lat}, {$obj[0]->lon}";
         }
     }
 }

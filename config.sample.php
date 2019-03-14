@@ -58,7 +58,6 @@ if ($jarvis_config['enabled_adapters'] == 'all' || in_array('irc', $jarvis_confi
  * Configuration for responders
  */
 $jarvis_config['forecast.io_key'] = 'FORECAST.IO_KEY';
-$jarvis_config['wunderground_key'] = 'WUNDERGROUND_KEY';
 $jarvis_config['bingmaps_key'] = 'BINGMAPS_KEY';
 
 $jarvis_config['twitter_consumer_key'] = 'TWITTER_CONSUMER_KEY';

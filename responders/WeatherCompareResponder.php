@@ -80,7 +80,7 @@ class WeatherCompareResponder extends Responder
         } else {
             $colors = '0000CC,990000';
         }
-        return "https://chart.googleapis.com/chart?cht=lc&chs=450x200&chd=t:{$dataA}|{$dataB}&chxt=x,y&chds=a&chco={$colors}&chdl=" . urlencode($this->locationA) . '|' . urlencode($this->locationB) . "&chxl=0:|" . implode('|', $xTicks);
+        return "https://image-charts.com/chart?cht=lc&chs=450x200&chd=t:{$dataA}|{$dataB}&chxt=x,y&chds=a&chco={$colors}&chdl=" . urlencode($this->locationA) . '|' . urlencode($this->locationB) . "&chxl=0:|" . implode('|', $xTicks);
     }
 
     protected function getCoords($location)

@@ -23,8 +23,14 @@ class GeocodeResponder extends Responder
             if (!is_object($obj) || !isset($obj->address)) {
                 return 'Not found';
             }
-            $address = "{$obj->address->city}, {$obj->address->state} {$obj->address->postcode}";
-            if ($obj->address->country && $obj->address->country != 'USA') {
+            $address = '';
+            if ($obj->address->city) {
+                $address = "{$obj->address->city}, ";
+            } elseif ($obj->address->town) {
+                $address = "{$obj->address->town}, ";
+            }
+            $address .= "{$obj->address->state} {$obj->address->postcode}";
+            if ($obj->address->country && !in_array($obj->address->country, ['USA', 'United States'])) {
                 $address .= ", {$obj->address->country}";
             }
             return $address;

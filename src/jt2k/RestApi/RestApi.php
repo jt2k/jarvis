@@ -137,7 +137,7 @@ class RestApi
             curl_setopt($ch, CURLOPT_USERPWD, $this->username.':'.$this->password);
         }
 
-        if (isset($extra['headers']) && is_array($extra['headers']) && count($extra['headers'] > 0)) {
+        if (isset($extra['headers']) && is_array($extra['headers']) && count($extra['headers']) > 0) {
             curl_setopt($ch, CURLOPT_HTTPHEADER, $extra['headers']);
         }
 
@@ -201,6 +201,13 @@ class RestApi
             case 'php':
             case 'php_serial':
                 return unserialize($response);
+                break;
+            case 'csv':
+                $fp = fopen("php://memory", 'r+');
+                fputs($fp, $response);
+                rewind($fp);
+                return $fp;
+                break;
             default:
                 return $response;
         }

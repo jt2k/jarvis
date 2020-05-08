@@ -54,7 +54,7 @@ class SlackBot extends Bot
         return true;
     }
 
-    public function respond(array $post, $return = false)
+    public function respond(array $post, $extra = null)
     {
         $communication = $this->parsePost();
         if (!$this->isValidCommunication($communication)) {
@@ -62,7 +62,8 @@ class SlackBot extends Bot
         }
 
         $result = $this->generateResponse($communication);
-        if ($return) {
+
+        if (is_array($extra) && isset($extra['return']) && $extra['return']) {
             return $result;
         } elseif ($result) {
             echo json_encode(array('text' => $result, 'parse' => 'full'));

@@ -184,7 +184,7 @@ class Bot
         }
     }
 
-    public function respond($communication)
+    public function respond(array $communication, $extra = null)
     {
         $result = $this->generateResponse($communication);
 

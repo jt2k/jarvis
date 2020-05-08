@@ -62,7 +62,7 @@ class MandrillBot extends Bot
         return array('text' => $text, 'user_name' => $msg->from_email, 'bot_type' => 'mandrill');
     }
 
-    public function respond(array $communication, \stdClass $msg)
+    public function respond(array $communication, $msg)
     {
         $result = $this->generateResponse($communication);
 

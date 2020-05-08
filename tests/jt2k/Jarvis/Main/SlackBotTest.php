@@ -20,7 +20,7 @@ class SlackBotTest extends PHPUnit_Framework_TestCase
             'token' => $GLOBALS['jarvis_config']['slackbot_token']
         );
         $_POST = $request;
-        return $this->bot->respond($request, true);
+        return $this->bot->respond($request, ['return' => true]);
     }
 
     public function testStatus()

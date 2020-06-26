@@ -75,13 +75,13 @@ class RestApi
         else
             $cache_life = $this->cache_life;
 
-        if (isset($extra['get']) && is_array($extra['get']) && count($extra['get'] > 0)) {
+        if (isset($extra['get']) && is_array($extra['get']) && count($extra['get']) > 0) {
             $url .= '?';
             $url .= http_build_query($extra['get']);
         }
 
         if (isset($extra['post'])) {
-            if (is_array($extra['post']) && count($extra['post'] > 0)) {
+            if (is_array($extra['post']) && count($extra['post']) > 0) {
                 $post = "";
                 $first = true;
                 foreach ($extra['post'] as $param=>$value) {

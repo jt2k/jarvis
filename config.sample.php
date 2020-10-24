@@ -75,3 +75,8 @@ $jarvis_config['github_username'] = 'GITHUB_USERNAME';
 $jarvis_config['riverflood_default_gauge'] = 'RIVERFLOOD_DEFAULT_GAUGE'; // e.g. 'omot1' - see http://water.weather.gov/ahps/
 
 $jarvis_config['google_key'] = 'GOOGLE_KEY';
+
+$jarvis_config['statuspage'] = [
+    'github' => 'kctbh9vrtdwd',
+    'jira' => '7yh3h3y0c0x1'
+];

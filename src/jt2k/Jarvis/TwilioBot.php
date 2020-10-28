@@ -9,7 +9,7 @@ class TwilioBot extends Bot
         return parent::__construct($config, 'sms');
     }
 
-    public function respond(array $post)
+    public function respond(array $post, $extra = null)
     {
         if (isset($post['Body']) && isset($post['From'])) {
             $communication = array(

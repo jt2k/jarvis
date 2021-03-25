@@ -5,21 +5,45 @@ class SPCResponder extends Responder
 {
     public static $pattern = '^(tornado|hail|wind|fire|hurricane)$';
     protected $endpoint = 'http://www.spc.noaa.gov/products';
+    protected $outlookTimes = [
+        '0100',
+        '1200',
+        '1300',
+        '1630',
+        '2000'
+    ];
+    protected $typeMap = [
+        'tornado' => 'torn',
+        'hail' => 'hail',
+        'wind' => 'wind'
+    ];
+
+    protected function getSpcOutlookFilename($type)
+    {
+        $now = new \DateTime();
+        $now->setTimezone(new \DateTimeZone('UTC'));
+        $utcTime = $now->format('Hi');
+        $latestTime = end($this->outlookTimes);
+        reset($this->outlookTimes);
+        foreach ($this->outlookTimes as $time) {
+            if ($utcTime >= $time) {
+                $latestTime = $time;
+            }
+        }
+        $slug = $this->typeMap[$type];
+
+        return "day1probotlk_{$latestTime}_{$slug}.gif";
+    }
 
     public function respond()
     {
         $type = $this->matches[1];
         switch (strtolower($type)) {
             case 'tornado':
-                $url = "{$this->endpoint}/outlook/day1probotlk_1300_torn.gif";
-                break;
-
             case 'hail':
-                $url = "{$this->endpoint}/outlook/day1probotlk_1300_hail.gif";
-                break;
-
             case 'wind':
-                $url = "{$this->endpoint}/outlook/day1probotlk_1300_wind.gif";
+                $filename = $this->getSpcOutlookFilename($type);
+                $url = "{$this->endpoint}/outlook/{$filename}";
                 break;
 
             case 'fire':

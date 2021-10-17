@@ -24,9 +24,9 @@ class GeocodeResponder extends Responder
                 return 'Not found';
             }
             $address = '';
-            if ($obj->address->city) {
+            if (!empty($obj->address->city)) {
                 $address = "{$obj->address->city}, ";
-            } elseif ($obj->address->town) {
+            } elseif (!empty($obj->address->town)) {
                 $address = "{$obj->address->town}, ";
             }
             $address .= "{$obj->address->state} {$obj->address->postcode}";

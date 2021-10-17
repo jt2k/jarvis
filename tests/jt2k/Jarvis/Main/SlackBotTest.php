@@ -1,11 +1,13 @@
 <?php
-use jt2k\Jarvis\SlackBot;
 
-class SlackBotTest extends PHPUnit_Framework_TestCase
+use jt2k\Jarvis\SlackBot;
+use PHPUnit\Framework\TestCase;
+
+class SlackBotTest extends TestCase
 {
     protected $bot;
 
-    protected function setUp()
+    protected function setUp(): void
     {
         $GLOBALS['jarvis_config']['slackbot_token'] = 'FOOBAR123';
         $this->bot = new SlackBot($GLOBALS['jarvis_config']);
@@ -26,9 +28,9 @@ class SlackBotTest extends PHPUnit_Framework_TestCase
     public function testStatus()
     {
         $response = $this->respond('status');
-        $this->assertContains('Bot type: SlackBot', $response);
-        $this->assertRegExp('/PID: \d+/', $response);
-        $this->assertRegExp('/Memory usage: \d/', $response);
+        $this->assertStringContainsString('Bot type: SlackBot', $response);
+        $this->assertMatchesRegularExpression('/PID: \d+/', $response);
+        $this->assertMatchesRegularExpression('/Memory usage: \d/', $response);
     }
 
     public function testMissingConfiguration()

@@ -1,7 +1,9 @@
 <?php
-use jt2k\Jarvis\Responder;
 
-abstract class AbstractResponderTest extends PHPUnit_Framework_TestCase
+use jt2k\Jarvis\Responder;
+use PHPUnit\Framework\TestCase;
+
+abstract class AbstractResponderTest extends TestCase
 {
     protected static $name;
     protected $responder;

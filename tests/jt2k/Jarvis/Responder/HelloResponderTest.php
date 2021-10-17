@@ -1,4 +1,5 @@
 <?php
+
 class HelloResponderTest extends AbstractResponderTest
 {
     protected static $name = 'HelloResponder';
@@ -7,6 +8,6 @@ class HelloResponderTest extends AbstractResponderTest
     public function testRespond()
     {
         $responder = $this->initResponder('hello');
-        $this->assertRegExp('/(Hi|Hello|Hey)/', $responder->respond());
+        $this->assertMatchesRegularExpression('/(Hi|Hello|Hey)/', $responder->respond());
     }
 }

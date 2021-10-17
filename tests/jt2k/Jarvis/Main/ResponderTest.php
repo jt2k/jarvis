@@ -1,11 +1,12 @@
 <?php
+
 use jt2k\Jarvis\Responder;
 
 class ResponderTest extends AbstractResponderTest
 {
     protected static $name = 'TestResponder';
 
-    protected function setUp()
+    protected function setUp(): void
     {
         require_once 'TestResponder.php';
         $this->responder = $this->initResponder('confirm');

@@ -18,6 +18,7 @@ class MLBResponder extends Responder
         }
         $text = '';
         foreach ($response->dates[0]->games as $game) {
+            $url = sprintf('https://www.mlb.com/gameday/%s', $game->gamePk);
             switch ($game->status->detailedState) {
                 case 'Scheduled':
                     try {
@@ -27,19 +28,21 @@ class MLBResponder extends Responder
                     } catch (Exception $e) {
                         $date = 'Scheduled';
                     }
-                    $text .= sprintf("%s at %s (%s)\n",
+                    $text .= sprintf("%s at %s (%s) - %s\n",
                         $game->teams->away->team->name,
                         $game->teams->home->team->name,
-                        $date
+                        $date,
+                        $url
                     );
                     break;
                 default:
-                    $text .= sprintf("%s %d, %s %d (%s)\n",
+                    $text .= sprintf("%s %d, %s %d (%s) - %s\n",
                         $game->teams->away->team->name,
                         $game->teams->away->score,
                         $game->teams->home->team->name,
                         $game->teams->home->score,
-                        $game->status->detailedState
+                        $game->status->detailedState,
+                        $url
                     );
             }
         }

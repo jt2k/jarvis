@@ -80,3 +80,8 @@ $jarvis_config['statuspage'] = [
     'github' => 'kctbh9vrtdwd',
     'jira' => '7yh3h3y0c0x1'
 ];
+
+$jarvis_config['adventofcode'] = [
+    'id' => 'LEADERBOARD_ID',
+    'token' => 'SESSION_COOKIE'
+];

@@ -104,7 +104,7 @@ abstract class Responder
         return false;
     }
 
-    protected function request($url, $cache_ttl = false, $cache_ext = '', $format = 'json')
+    protected function request($url, $cache_ttl = false, $cache_ext = '', $format = 'json', $headers = [])
     {
         $restapi = new RestApi();
         $restapi->setFormat($format);
@@ -113,7 +113,8 @@ abstract class Responder
         } else {
             $restapi->setCacheLife(0);
         }
-        return $restapi->request($url, array('headers' => array('User-Agent: jarvis')));
+        $headers[] = 'User-Agent: jarvis';
+        return $restapi->request($url, ['headers' => $headers]);
     }
 
     protected function requestRaw($url, $cache_ttl = false, $cache_ext = '')
